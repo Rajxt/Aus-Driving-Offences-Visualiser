@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speeding Violations Data Portal</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul class="nav-tabs">
+        <li><a href="#" class="active" data-tab="dashboard">Home</a></li>
+        <li><a href="#" data-tab="trends">Explore more</a></li>
+        <li><a href="#" data-tab="resources">Resources</a></li>
+        <div class="pill"></div>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="content">
+      <h1>Traffic Violations Data Center</h1>
+      <p>Comprehensive analytics on speeding fines, demographics, charges, and arrests to improve traffic safety policies.</p>
+      <a href="#" class="explore">Explore Data</a>
+    </div>
+  </section>
+
+  <section class="main">
+    <h2 class="key">Key Insights</h2>
+    <div class="data-grid">
+      <div class="card">
+        <h3>Speeding Fine Distribution</h3>
+        <div class="graph">Area Chart</div>
+        <p>Analysis of speeding fine amounts across different jurisdictions and severity levels.</p>
+      </div>
+      <div class="card">
+        <h3>Demographic Breakdown</h3>
+        <div class="graph">Pie Chart</div>
+        <p>Demographics of individuals receiving speeding tickets categorized by age, gender, and more.</p>
+      </div>
+      <div class="card">
+        <h3>Arrest Frequency</h3>
+        <div class="graph">Bar Graph</div>
+        <p>Monthly trends of arrests related to traffic violations and their correlation with other factors.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Traffic Violations Data Center. All data is for informational purposes only.</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get all navigation links
+      const navLinks = document.querySelectorAll('.nav-tabs a');
+      const pill = document.querySelector('.pill');
+      
+      // Set initial position of pill based on active tab
+      function initPill() {
+        const activeTab = document.querySelector('.nav-tabs a.active');
+        positionPill(activeTab);
+      }
+      
+      // Function to position the pill under the active tab
+      function positionPill(activeTab) {
+        if (!activeTab || !pill) return;
+        
+        // Get position details
+        const tabRect = activeTab.getBoundingClientRect();
+        const navRect = document.querySelector('.nav-tabs').getBoundingClientRect();
+        
+        // Position the pill
+        pill.style.width = `${tabRect.width}px`;
+        pill.style.left = `${tabRect.left - navRect.left}px`;
+      }
+      
+      // Add click event listeners to each tab
+      navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Remove active class from all tabs
+          navLinks.forEach(l => l.classList.remove('active'));
+          
+          // Add active class to clicked tab
+          this.classList.add('active');
+          
+          // Position the pill
+          positionPill(this);
+        });
+      });
+      
+      // Initialize pill position
+      initPill();
+      
+      // Adjust pill on window resize
+      window.addEventListener('resize', function() {
+        const activeTab = document.querySelector('.nav-tabs a.active');
+        positionPill(activeTab);
+      });
+    });
+  </script>
+</body>
+</html>
