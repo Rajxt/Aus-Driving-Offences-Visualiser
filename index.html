@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Speeding Violations Data Portal</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+   
+  </style>
 </head>
 <body>
   <header>
@@ -18,32 +21,62 @@
     </nav>
   </header>
 
-  <section class="hero">
-    <div class="content">
-      <h1>Traffic Violations Data Center</h1>
-      <p>Comprehensive analytics on speeding fines, demographics, charges, and arrests to improve traffic safety policies.</p>
-      <a href="#" class="explore">Explore Data</a>
+  <!-- Home Section -->
+  <section class="section-content active" id="dashboard">
+    <section class="hero">
+      <div class="content">
+        <h1>Traffic Violations Data Center</h1>
+        <p>Comprehensive analytics on speeding fines, demographics, charges, and arrests to improve traffic safety policies.</p>
+        <a href="#" class="explore">Explore Data</a>
+      </div>
+    </section>
+
+    <section class="main">
+      <h2 class="key">Key Insights</h2>
+      <div class="data-grid">
+        <div class="card">
+          <h3>Speeding Fine Distribution</h3>
+          <div class="graph">Area Chart</div>
+          <p>Analysis of speeding fine amounts across different jurisdictions and severity levels.</p>
+        </div>
+        <div class="card">
+          <h3>Demographic Breakdown</h3>
+          <div class="graph">Pie Chart</div>
+          <p>Demographics of individuals receiving speeding tickets categorized by age, gender, and more.</p>
+        </div>
+        <div class="card">
+          <h3>Arrest Frequency</h3>
+          <div class="graph">Bar Graph</div>
+          <p>Monthly trends of arrests related to traffic violations and their correlation with other factors.</p>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- Explore Section (Placeholder) -->
+  <section class="section-content" id="trends">
+    <div class="container">
+      <h2>Explore Data</h2>
+      <p>Interactive charts and detailed visualizations will go here.</p>
     </div>
   </section>
 
-  <section class="main">
-    <h2 class="key">Key Insights</h2>
-    <div class="data-grid">
-      <div class="card">
-        <h3>Speeding Fine Distribution</h3>
-        <div class="graph">Area Chart</div>
-        <p>Analysis of speeding fine amounts across different jurisdictions and severity levels.</p>
-      </div>
-      <div class="card">
-        <h3>Demographic Breakdown</h3>
-        <div class="graph">Pie Chart</div>
-        <p>Demographics of individuals receiving speeding tickets categorized by age, gender, and more.</p>
-      </div>
-      <div class="card">
-        <h3>Arrest Frequency</h3>
-        <div class="graph">Bar Graph</div>
-        <p>Monthly trends of arrests related to traffic violations and their correlation with other factors.</p>
-      </div>
+  <!-- About Us Section -->
+  <section class="section-content" id="resources">
+    <div class="about-us">
+      <h2>About Us</h2>
+      <p>
+        The <strong>Traffic Violations Data Center</strong> is a public initiative dedicated to enhancing road safety and accountability through transparent data analytics. Our platform compiles and visualizes comprehensive datasets related to traffic violations, with a primary focus on speeding incidents.
+      </p>
+      <p>
+        Our mission is to empower policymakers, researchers, journalists, and concerned citizens with reliable insights into traffic law enforcement. We aim to promote data-driven decisions that contribute to safer roads and more equitable traffic law practices.
+      </p>
+      <p>
+        This project is developed by a cross-functional team of data analysts, software developers, and civic technologists who believe in open access to public information. All data used on this platform is sourced from state and federal transportation agencies and is updated regularly to ensure accuracy and relevance.
+      </p>
+      <p>
+        If you have feedback, suggestions, or data contributions, feel free to <a href="mailto:contact@trafficdata.org">contact us</a>.
+      </p>
     </div>
   </section>
 
@@ -52,54 +85,47 @@
   </footer>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Get all navigation links
+    document.addEventListener('DOMContentLoaded', function () {
       const navLinks = document.querySelectorAll('.nav-tabs a');
       const pill = document.querySelector('.pill');
-      
-      // Set initial position of pill based on active tab
-      function initPill() {
-        const activeTab = document.querySelector('.nav-tabs a.active');
-        positionPill(activeTab);
-      }
-      
-      // Function to position the pill under the active tab
+      const sections = document.querySelectorAll('.section-content');
+
       function positionPill(activeTab) {
         if (!activeTab || !pill) return;
-        
-        // Get position details
         const tabRect = activeTab.getBoundingClientRect();
         const navRect = document.querySelector('.nav-tabs').getBoundingClientRect();
-        
-        // Position the pill
         pill.style.width = `${tabRect.width}px`;
         pill.style.left = `${tabRect.left - navRect.left}px`;
       }
-      
-      // Add click event listeners to each tab
+
+      function switchTab(tabId) {
+        sections.forEach(section => {
+          section.classList.remove('active');
+        });
+        const activeSection = document.getElementById(tabId);
+        if (activeSection) {
+          activeSection.classList.add('active');
+        }
+      }
+
       navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
           e.preventDefault();
-          
-          // Remove active class from all tabs
           navLinks.forEach(l => l.classList.remove('active'));
-          
-          // Add active class to clicked tab
           this.classList.add('active');
-          
-          // Position the pill
           positionPill(this);
+          const tabId = this.getAttribute('data-tab');
+          switchTab(tabId);
         });
       });
-      
-      // Initialize pill position
-      initPill();
-      
-      // Adjust pill on window resize
-      window.addEventListener('resize', function() {
+
+      window.addEventListener('resize', function () {
         const activeTab = document.querySelector('.nav-tabs a.active');
         positionPill(activeTab);
       });
+
+      // Initialize on load
+      positionPill(document.querySelector('.nav-tabs a.active'));
     });
   </script>
 </body>
