@@ -41,5 +41,31 @@
   <footer>
     <p>&copy; 2025 Traffic Violations Data Center. All data is for informational purposes only.</p>
   </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const navLinks = document.querySelectorAll('.nav-tabs a');
+      const pill = document.querySelector('.pill');
+  
+      function positionPill(activeTab) {
+        if (!activeTab || !pill) return;
+        const tabRect = activeTab.getBoundingClientRect();
+        const navRect = document.querySelector('.nav-tabs').getBoundingClientRect();
+        pill.style.width = `${tabRect.width}px`;
+        pill.style.left = `${tabRect.left - navRect.left}px`;
+      }
+  
+      // Only position pill without blocking navigation
+      const activeTab = document.querySelector('.nav-tabs a.active');
+      if (activeTab) {
+        positionPill(activeTab);
+      }
+  
+      window.addEventListener('resize', function () {
+        const activeTab = document.querySelector('.nav-tabs a.active');
+        positionPill(activeTab);
+      });
+    });
+  </script>
 </body>
 </html>

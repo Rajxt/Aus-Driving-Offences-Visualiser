@@ -58,10 +58,8 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const navLinks = document.querySelectorAll('.nav-tabs a');
-      const exploreButton = document.querySelector('.explore');
       const pill = document.querySelector('.pill');
-      const sections = document.querySelectorAll('.section-content');
-
+  
       function positionPill(activeTab) {
         if (!activeTab || !pill) return;
         const tabRect = activeTab.getBoundingClientRect();
@@ -69,53 +67,19 @@
         pill.style.width = `${tabRect.width}px`;
         pill.style.left = `${tabRect.left - navRect.left}px`;
       }
-
-      function switchTab(tabId) {
-        sections.forEach(section => {
-          section.classList.remove('active');
-        });
-        const activeSection = document.getElementById(tabId);
-        if (activeSection) {
-          activeSection.classList.add('active');
-        }
+  
+      // Only position pill without blocking navigation
+      const activeTab = document.querySelector('.nav-tabs a.active');
+      if (activeTab) {
+        positionPill(activeTab);
       }
-
-      navLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
-          e.preventDefault();
-          navLinks.forEach(l => l.classList.remove('active'));
-          this.classList.add('active');
-          positionPill(this);
-          const tabId = this.getAttribute('data-tab');
-          switchTab(tabId);
-        });
-      });
-
-      // Handle Explore button (separate from nav)
-      exploreButton.addEventListener('click', function (e) {
-        e.preventDefault();
-        const tabId = this.getAttribute('data-tab');
-
-        // Activate nav tab visually
-        navLinks.forEach(link => link.classList.remove('active'));
-        const matchingNavLink = document.querySelector(`.nav-tabs a[data-tab="${tabId}"]`);
-        if (matchingNavLink) {
-          matchingNavLink.classList.add('active');
-          positionPill(matchingNavLink);
-        }
-
-        switchTab(tabId);
-      });
-
+  
       window.addEventListener('resize', function () {
         const activeTab = document.querySelector('.nav-tabs a.active');
         positionPill(activeTab);
       });
-
-      // Initialize on load
-      positionPill(document.querySelector('.nav-tabs a.active'));
     });
   </script>
+  
 </body>
 </html>
-`
