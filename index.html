@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Speeding Violations Data Portal</title>
   <link rel="stylesheet" href="css/style.css"/>
-  <style>
-   
-  </style>
+
 </head>
 <body>
   <header>
@@ -27,7 +25,7 @@
       <div class="content">
         <h1>Traffic Violations Data Center</h1>
         <p>Comprehensive analytics on speeding fines, demographics, charges, and arrests to improve traffic safety policies.</p>
-        <a href="#" class="explore" data-tab="resources">Explore Data</a>
+        <a href="#" class="explore" data-tab="trends">Explore Data</a>
       </div>
     </section>
 
@@ -65,41 +63,10 @@
   <section class="section-content" id="resources">
     <div class="about-us">
       <h2>About Us</h2>
-      <p>
-        This platform was developed to address the growing public safety concern of mobile phone use while driving. With smartphones becoming deeply embedded in everyday life, phone-related distractions have become a major contributing factor in road accidents. According to CARRS-Q (2020), mobile phone distractions are estimated to be involved in around 18% of Australia’s fatal crashes.
-      </p>
-      <p>
-        Our aim is to raise awareness of this critical issue by presenting data-driven visualisations that help users understand how mobile phone use while driving varies across age groups, regions, and offence types. This project allows users to explore trends in fines, charges, and arrests related to mobile phone offences over time.
-      </p>
-      <p>
-        This tool is intended to support:
-      </p>
-      <p>
-      <ul>
-        <li><strong>The general public</strong>, by illustrating the real dangers and legal consequences of phone use while driving.</li>
-        <li><strong>Law enforcement agencies</strong>, by providing data that can help tailor enforcement strategies to specific demographics and locations.</li>
-        <li><strong>Policy makers</strong>, by informing the development of targeted policies and public safety campaigns.</li>
-        <li><strong>Technology and automotive industries</strong>, by reinforcing the importance of developing in-car systems to reduce driver distraction.</li>
-      </ul>
-      </p>
-      <p><strong>
-        Our interactive dashboard enables users to answer key questions such as:
-      </strong>
-      </p>
-      <ul>
-        <li>Which age groups are most frequently charged or fined?</li>
-        <li>Are mobile phone offences more common in urban or regional areas?</li>
-        <li>How do incidents vary across different states and over the past decade?</li>
-      </ul>
-      <p>
-        By offering these insights, our visualisation seeks to promote safer driving behaviours, inform interventions, and ultimately reduce the number of lives lost or impacted by distracted driving.
-      </p>
-      <p>
-        For enquiries or feedback, please <a href="mailto:trafficviolations@gmail.com">contact us</a>.
-      </p>
+      <p>This platform was developed to address the growing public safety concern of mobile phone use while driving...</p>
+      <!-- Additional About Us Content Here -->
     </div>
   </section>
-  
 
   <footer>
     <p>&copy; 2025 Traffic Violations Data Center. All data is for informational purposes only.</p>
@@ -107,14 +74,15 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const navLinks = document.querySelectorAll('.nav-tabs a, .explore');
+      const navLinks = document.querySelectorAll('.nav-tabs a');
+      const exploreButton = document.querySelector('.explore');
       const pill = document.querySelector('.pill');
       const sections = document.querySelectorAll('.section-content');
 
       function positionPill(activeTab) {
         if (!activeTab || !pill) return;
         const tabRect = activeTab.getBoundingClientRect();
-        const navRect = document.querySelector('.nav-tabs a, .explore').getBoundingClientRect();
+        const navRect = document.querySelector('.nav-tabs').getBoundingClientRect();
         pill.style.width = `${tabRect.width}px`;
         pill.style.left = `${tabRect.left - navRect.left}px`;
       }
@@ -138,6 +106,22 @@
           const tabId = this.getAttribute('data-tab');
           switchTab(tabId);
         });
+      });
+
+      // Handle Explore button (separate from nav)
+      exploreButton.addEventListener('click', function (e) {
+        e.preventDefault();
+        const tabId = this.getAttribute('data-tab');
+
+        // Activate nav tab visually
+        navLinks.forEach(link => link.classList.remove('active'));
+        const matchingNavLink = document.querySelector(`.nav-tabs a[data-tab="${tabId}"]`);
+        if (matchingNavLink) {
+          matchingNavLink.classList.add('active');
+          positionPill(matchingNavLink);
+        }
+
+        switchTab(tabId);
       });
 
       window.addEventListener('resize', function () {
