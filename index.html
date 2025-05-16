@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Speeding Violations Data Portal</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css"/>
+
 </head>
 <body>
   <header>
@@ -18,88 +19,149 @@
     </nav>
   </header>
 
-  <section class="hero">
-    <div class="content">
-      <h1>Traffic Violations Data Center</h1>
-      <p>Comprehensive analytics on speeding fines, demographics, charges, and arrests to improve traffic safety policies.</p>
-      <a href="#" class="explore">Explore Data</a>
+  <!-- Home Section -->
+  <section class="section-content active" id="dashboard">
+    <section class="hero">
+      <div class="content">
+        <h1>Traffic Violations Data Center</h1>
+        <p>Comprehensive analytics on speeding fines, demographics, charges, and arrests to improve traffic safety policies.</p>
+        <a href="#" class="explore" data-tab="trends">Explore Data</a>
+      </div>
+    </section>
+
+    <section class="main">
+      <h2 class="key">Key Insights</h2>
+      <div class="data-grid">
+        <div class="card">
+          <h3>Speeding Fine Distribution</h3>
+          <div class="graph">Area Chart</div>
+          <p>Analysis of speeding fine amounts across different jurisdictions and severity levels.</p>
+        </div>
+        <div class="card">
+          <h3>Demographic Breakdown</h3>
+          <div class="graph">Pie Chart</div>
+          <p>Demographics of individuals receiving speeding tickets categorized by age, gender, and more.</p>
+        </div>
+        <div class="card">
+          <h3>Arrest Frequency</h3>
+          <div class="graph">Bar Graph</div>
+          <p>Monthly trends of arrests related to traffic violations and their correlation with other factors.</p>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- Explore Section -->
+  <section class="section-content" id="trends">
+    <div class="container">
+      <h2>Explore Data</h2>
+      <p>Interactive charts and detailed visualizations will go here.</p>
     </div>
   </section>
 
-  <section class="main">
-    <h2 class="key">Key Insights</h2>
-    <div class="data-grid">
-      <div class="card">
-        <h3>Speeding Fine Distribution</h3>
-        <div class="graph">Area Chart</div>
-        <p>Analysis of speeding fine amounts across different jurisdictions and severity levels.</p>
-      </div>
-      <div class="card">
-        <h3>Demographic Breakdown</h3>
-        <div class="graph">Pie Chart</div>
-        <p>Demographics of individuals receiving speeding tickets categorized by age, gender, and more.</p>
-      </div>
-      <div class="card">
-        <h3>Arrest Frequency</h3>
-        <div class="graph">Bar Graph</div>
-        <p>Monthly trends of arrests related to traffic violations and their correlation with other factors.</p>
-      </div>
+  <!-- About Us Section -->
+  <section class="section-content" id="resources">
+    <div class="about-us">
+      <h2>About Us</h2>
+      <p>
+        This platform was developed to address the growing public safety concern of mobile phone use while driving. With smartphones becoming deeply embedded in everyday life, phone-related distractions have become a major contributing factor in road accidents. According to CARRS-Q (2020), mobile phone distractions are estimated to be involved in around 18% of Australia’s fatal crashes.
+      </p>
+      <p>
+        Our aim is to raise awareness of this critical issue by presenting data-driven visualisations that help users understand how mobile phone use while driving varies across age groups, regions, and offence types. This project allows users to explore trends in fines, charges, and arrests related to mobile phone offences over time.
+      </p>
+      <p>
+        This tool is intended to support:
+      </p>
+      <p>
+      <ul>
+        <li><strong>The general public</strong>, by illustrating the real dangers and legal consequences of phone use while driving.</li>
+        <li><strong>Law enforcement agencies</strong>, by providing data that can help tailor enforcement strategies to specific demographics and locations.</li>
+        <li><strong>Policy makers</strong>, by informing the development of targeted policies and public safety campaigns.</li>
+        <li><strong>Technology and automotive industries</strong>, by reinforcing the importance of developing in-car systems to reduce driver distraction.</li>
+      </ul>
+    </p>
+      <p><strong>
+        Our interactive dashboard enables users to answer key questions such as:
+      </strong>
+      </p>
+      <ul>
+        <li>Which age groups are most frequently charged or fined?</li>
+        <li>Are mobile phone offences more common in urban or regional areas?</li>
+        <li>How do incidents vary across different states and over the past decade?</li>
+      </ul>
+      <p>
+        By offering these insights, our visualisation seeks to promote safer driving behaviours, inform interventions, and ultimately reduce the number of lives lost or impacted by distracted driving.
+      </p>
+      <p>
+        For enquiries or feedback, please <a href="mailto:contact@trafficdata.org">contact us</a>.
+      </p>
     </div>
   </section>
+  
 
   <footer>
     <p>&copy; 2025 Traffic Violations Data Center. All data is for informational purposes only.</p>
   </footer>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Get all navigation links
+    document.addEventListener('DOMContentLoaded', function () {
       const navLinks = document.querySelectorAll('.nav-tabs a');
+      const exploreButton = document.querySelector('.explore');
       const pill = document.querySelector('.pill');
-      
-      // Set initial position of pill based on active tab
-      function initPill() {
-        const activeTab = document.querySelector('.nav-tabs a.active');
-        positionPill(activeTab);
-      }
-      
-      // Function to position the pill under the active tab
+      const sections = document.querySelectorAll('.section-content');
+
       function positionPill(activeTab) {
         if (!activeTab || !pill) return;
-        
-        // Get position details
         const tabRect = activeTab.getBoundingClientRect();
         const navRect = document.querySelector('.nav-tabs').getBoundingClientRect();
-        
-        // Position the pill
         pill.style.width = `${tabRect.width}px`;
         pill.style.left = `${tabRect.left - navRect.left}px`;
       }
-      
-      // Add click event listeners to each tab
+
+      function switchTab(tabId) {
+        sections.forEach(section => {
+          section.classList.remove('active');
+        });
+        const activeSection = document.getElementById(tabId);
+        if (activeSection) {
+          activeSection.classList.add('active');
+        }
+      }
+
       navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
           e.preventDefault();
-          
-          // Remove active class from all tabs
           navLinks.forEach(l => l.classList.remove('active'));
-          
-          // Add active class to clicked tab
           this.classList.add('active');
-          
-          // Position the pill
           positionPill(this);
+          const tabId = this.getAttribute('data-tab');
+          switchTab(tabId);
         });
       });
-      
-      // Initialize pill position
-      initPill();
-      
-      // Adjust pill on window resize
-      window.addEventListener('resize', function() {
+
+      // Handle Explore button (separate from nav)
+      exploreButton.addEventListener('click', function (e) {
+        e.preventDefault();
+        const tabId = this.getAttribute('data-tab');
+
+        // Activate nav tab visually
+        navLinks.forEach(link => link.classList.remove('active'));
+        const matchingNavLink = document.querySelector(`.nav-tabs a[data-tab="${tabId}"]`);
+        if (matchingNavLink) {
+          matchingNavLink.classList.add('active');
+          positionPill(matchingNavLink);
+        }
+
+        switchTab(tabId);
+      });
+
+      window.addEventListener('resize', function () {
         const activeTab = document.querySelector('.nav-tabs a.active');
         positionPill(activeTab);
       });
+
+      // Initialize on load
+      positionPill(document.querySelector('.nav-tabs a.active'));
     });
   </script>
 </body>

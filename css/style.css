@@ -222,10 +222,32 @@
     color: var(--white);
   }
 
-  /* fonts */
 
   .cal-sans-regular {
     font-family: "Cal Sans", sans-serif;
     font-style: normal;
   }
+
+   .section-content { display: none; }
+   .section-content.active { display: block; }
+
+   .about-us {
+     max-width: 800px;
+     margin: 0 auto;
+     padding: 2rem;
+   }
+
+   .about-us h2 {
+     font-size: 3rem;
+     margin-bottom: 1rem;
+     margin-top: 10rem;
+   }
+
+   .about-us p {
+     font-size: 1rem;
+     line-height: 1.6;
+     margin-bottom: 1rem;
+   }
+
+   
   
