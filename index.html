@@ -109,8 +109,8 @@
     document.addEventListener('DOMContentLoaded', function () {
       const navLinks = document.querySelectorAll('.nav-tabs a');
       const pill = document.querySelector('.pill');
-  
-      // Function to position the pill under the active tab
+      const sections = document.querySelectorAll('.section-content');
+
       function positionPill(activeTab) {
         if (!activeTab || !pill) return;
         const tabRect = activeTab.getBoundingClientRect();
@@ -118,52 +118,45 @@
         pill.style.width = `${tabRect.width}px`;
         pill.style.left = `${tabRect.left - navRect.left}px`;
       }
-  
-      // Handle tab switching
-      function activateTab(tabName) {
-        navLinks.forEach(link => {
-          const isActive = link.getAttribute('data-tab') === tabName;
-          link.classList.toggle('active', isActive);
-          if (isActive) positionPill(link);
+
+      function switchTab(tabId) {
+        sections.forEach(section => {
+          section.classList.remove('active');
         });
-  
-        // Optional: scroll to section
-        const targetSection = document.getElementById(tabName);
-        if (targetSection) {
-          targetSection.scrollIntoView({ behavior: 'smooth' });
+        const activeSection = document.getElementById(tabId);
+        if (activeSection) {
+          activeSection.classList.add('active');
         }
       }
-  
-      // Handle nav tab clicks
+
       navLinks.forEach(link => {
         link.addEventListener('click', function (e) {
           e.preventDefault();
-          const tabName = this.getAttribute('data-tab');
-          activateTab(tabName);
+          navLinks.forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+          positionPill(this);
+          const tabId = this.getAttribute('data-tab');
+          switchTab(tabId);
         });
       });
-  
-      // Handle 'Explore Data' button click
+
       const exploreBtn = document.querySelector('.explore');
-      if (exploreBtn) {
-        exploreBtn.addEventListener('click', function (e) {
-          e.preventDefault();
-          const tabName = this.getAttribute('data-tab');
-          activateTab(tabName);
-        });
-      }
-  
-      // Initialize pill on load
-      const initialActive = document.querySelector('.nav-tabs a.active');
-      if (initialActive) positionPill(initialActive);
-  
-      // Recalculate pill on resize
+    if (exploreBtn) {
+      exploreBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        const tabName = this.getAttribute('data-tab');
+        activateTab(tabName);
+      });
+    }
+
       window.addEventListener('resize', function () {
         const activeTab = document.querySelector('.nav-tabs a.active');
-        if (activeTab) positionPill(activeTab);
+        positionPill(activeTab);
       });
+
+      // Initialize on load
+      positionPill(document.querySelector('.nav-tabs a.active'));
     });
   </script>
-  
 </body>
 </html>
