@@ -222,14 +222,12 @@
     color: var(--white);
   }
 
-  /* fonts */
 
   .cal-sans-regular {
     font-family: "Cal Sans", sans-serif;
     font-style: normal;
   }
 
-   /* Basic styles for sections */
    .section-content { display: none; }
    .section-content.active { display: block; }
 

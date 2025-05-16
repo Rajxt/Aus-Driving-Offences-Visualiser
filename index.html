@@ -53,7 +53,7 @@
     </section>
   </section>
 
-  <!-- Explore Section (Placeholder) -->
+  <!-- Explore Section -->
   <section class="section-content" id="trends">
     <div class="container">
       <h2>Explore Data</h2>
@@ -61,7 +61,7 @@
     </div>
   </section>
 
-  
+  <!-- About Us Section -->
   <section class="section-content" id="resources">
     <div class="about-us">
       <h2>About Us</h2>
@@ -114,7 +114,7 @@
       function positionPill(activeTab) {
         if (!activeTab || !pill) return;
         const tabRect = activeTab.getBoundingClientRect();
-        const navRect = document.querySelector('.nav-tabs').getBoundingClientRect();
+        const navRect = document.querySelector('.nav-tabs a, .explore').getBoundingClientRect();
         pill.style.width = `${tabRect.width}px`;
         pill.style.left = `${tabRect.left - navRect.left}px`;
       }
