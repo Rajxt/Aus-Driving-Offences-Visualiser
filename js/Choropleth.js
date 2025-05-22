@@ -2,7 +2,7 @@ import { loadChoropleth } from './LoadData.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     const width = 800;
-    const height = 600;
+    const height = 800;
     const svg = d3.select("#choropleth")
         .attr("width", width)
         .attr("height", height);
@@ -54,12 +54,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 const baseColor = stateColors[state] || '#90a4ae';
                 const val = valueByState.get(state);
                 
-                if (val == null) return "#e3f2fd"; // Very light blue for no data
+                if (val == null) return "#e3f2fd"; 
                 
                 const intensity = intensityScale(val);
                 const color = d3.color(baseColor);
                 
-                // Adjust opacity based on value intensity
                 return color.copy({ opacity: intensity }).formatRgb();
             })
             .attr("stroke", "#ffffff")
@@ -68,15 +67,15 @@ document.addEventListener('DOMContentLoaded', function () {
             .style("transition", "all 0.3s ease")
             .on("mouseover", function(event, d) {
                 d3.select(this)
-                    .attr("stroke", "#0d47a1")
-                    .attr("stroke-width", 1)
-                    .style("filter", "drop-shadow(0px 2px 4px rgba(0,0,0,0.8))");
+                    .style("filter", "drop-shadow(0px 2px 4px rgba(0,0,0,0.8))")
+                    .style("transform","scale(1.01)");
             })
             .on("mouseout", function(event, d) {
                 d3.select(this)
                     .attr("stroke", "#ffffff")
                     .attr("stroke-width", 1.5)
-                    .style("filter", "drop-shadow(0px 1px 2px rgba(0,0,0,0.1))");
+                    .style("filter", "drop-shadow(0px 1px 2px rgba(0,0,0,0.1))")
+                    .style("transform","scale(1)");
             });
 
         // Remove existing tooltips
@@ -91,17 +90,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const formattedVal = val ? val.toLocaleString() : "No data";
                 return `${name}\n${metric}: ${formattedVal}\nYear: ${year}`;
             });
-
-        // Update or create legend
-        updateLegend(valueByState, metric);
     }
 
     
 
-     
-
-
-    // Load data and initialize
     loadChoropleth().then(([geo, d]) => {
         geoData = geo;
         data = d;
