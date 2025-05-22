@@ -1,15 +1,15 @@
-import { loadData } from './LoadData.js';
+import { loadLine } from './LoadData.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     const width = 800;
-    const height = 600;
+    const height = 520;
     const margin = { top: 50, right: 30, bottom: 50, left: 60 };
 
     const svg = d3.select("#line")
         .attr("width", width)
         .attr("height", height);
 
-    loadData().then(([natOver]) => {
+    loadLine().then(([natOver]) => {
         
         const finesByYear = d3.rollup(
             natOver,

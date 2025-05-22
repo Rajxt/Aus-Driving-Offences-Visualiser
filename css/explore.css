@@ -204,6 +204,19 @@ nav {
     overflow: hidden;
 }
 
+.national-line {
+    width: 100%;
+    height: 500px;
+    background-color: var(--light-blue);
+    border-radius: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
 svg {
     width: 100%;
     max-width: 800px;
