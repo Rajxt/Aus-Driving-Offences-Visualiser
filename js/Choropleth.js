@@ -1,5 +1,5 @@
 // Choropleth.js
-import { loadData } from './LoadData.js';
+import { loadChoropleth } from './LoadData.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     const width = 800;
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const colorScale = d3.scaleSequential(d3.interpolateBlues)
         .domain([0, 200000]);
 
-    loadData().then(([geoData, data]) => {
+    loadChoropleth().then(([geoData, data]) => {
         const valueByState = d3.rollup(
             data,
             v => d3.sum(v, d => +d.FINES),
