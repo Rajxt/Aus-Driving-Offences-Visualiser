@@ -209,6 +209,7 @@ nav {
     height: 500px;
     background-color: var(--light-blue);
     border-radius: 8px;
+    margin-top: 20px;
 
     display: flex;
     align-items: center;
