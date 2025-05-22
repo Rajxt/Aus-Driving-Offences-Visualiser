@@ -123,6 +123,9 @@ nav {
     position: relative;
     justify-content: space-between;
 }
+label{
+    text-align: center;
+}
 
 .navtab li {
     flex: 1;

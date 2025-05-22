@@ -41,21 +41,9 @@
 
                 <!-- Choropleth -->
                 <div class="demo">
-                    <select class="form-select-lg" aria-label="Default select example">
-                        <option selected value="1">Fines</option>
-                        <option value="2">Arrests</option>
-                      </select>
-                      <input type="range" class="form-range mt-4" min="2008" max="2023" step="1.2" id="yearRange">
-                        <div class="d-flex justify-content-between px-1 mt-2 text-muted small" id="range-labels">
-                          <span>2008</span>
-                          <span>2010</span>
-                          <span>2012</span>
-                          <span>2014</span>
-                          <span>2016</span>
-                          <span>2018</span>
-                          <span>2020</span>
-                          <span>2023</span>
-                        </div>
+
+                    <label for="yearSlider" class="form-label">Fines for Year: <span id="yearLabel">2023</span></label>
+                    <input type="range" class="form-range" min="2008" max="2023" value="2023" id="yearSlider" />
 
                     <div class="national-charts">
                         <svg id="choropleth"></svg>

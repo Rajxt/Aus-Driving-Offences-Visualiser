@@ -104,7 +104,7 @@
         "id": 7,
         "properties": {
           "STATE_CODE": "8",
-          "STATE_NAME": "Australian Capital Territory"
+          "STATE_NAME": "ACT"
         },
         "geometry": {
           "type": "Polygon",
