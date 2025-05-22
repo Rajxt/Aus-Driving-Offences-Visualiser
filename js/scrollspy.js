@@ -1,7 +1,8 @@
+
+document.addEventListener('DOMContentLoaded', function() {
 const scrollspyLinks = document.querySelectorAll('#scrollspy-menu a');
 const sections = document.querySelectorAll('.section-content');
 
-document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.navtab a');
     const pill = document.querySelector('.pill');
 
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     initPill();
-  });
+ 
 
 function highlightScrollspy() {
     let scrollPosition = window.scrollY + 100; // Offset for better highlighting
@@ -79,3 +80,4 @@ window.addEventListener('resize', initPill);
 initPill();
 highlightScrollspy(); 
 
+});
