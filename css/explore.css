@@ -20,7 +20,7 @@
 }
 
 body {
-    background-color: #d6e6ff;
+    background-color: #d6e6ff !important;
     color: var(--text-dark);
     line-height: 1.6;
     padding-top: 80px;
