@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>About Us</title>
-  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/about.css"/>
 </head>
 <body>
   <header>
     <nav>
-      <ul class="nav-tabs">
+      <ul class="navtab">
         <li><a href="index.html">Home</a></li>
         <li><a href="explore.html">Explore more</a></li>
         <li><a href="about.html" class="active">About Us</a></li>
@@ -55,43 +55,7 @@
     <p>&copy; 2025 Traffic Violations Data Center. All data is for informational purposes only.</p>
   </footer>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const navLinks = document.querySelectorAll('.nav-tabs a');
-      const pill = document.querySelector('.pill');
-  
-      function initPill() {
-        const activeTab = document.querySelector('.nav-tabs a.active');
-        positionPill(activeTab);
-      }
-  
-      function positionPill(activeTab) {
-        if (!activeTab || !pill) return;
-  
-        const tabRect = activeTab.getBoundingClientRect();
-        const navRect = document.querySelector('.nav-tabs').getBoundingClientRect();
-  
-        pill.style.width = `${tabRect.width}px`;
-        pill.style.left = `${tabRect.left - navRect.left}px`;
-      }
-  
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          // Allow default anchor behavior (page navigation)
-          navLinks.forEach(l => l.classList.remove('active'));
-          this.classList.add('active');
-          positionPill(this);
-        });
-      });
-  
-      window.addEventListener('resize', function() {
-        const activeTab = document.querySelector('.nav-tabs a.active');
-        positionPill(activeTab);
-      });
-  
-      initPill();
-    });
-  </script>
+  <script src="js/scrollspy.js"></script>
   
 </body>
 </html>

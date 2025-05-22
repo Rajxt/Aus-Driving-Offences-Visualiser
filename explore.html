@@ -1,72 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Explore Data</title>
-  <link rel="stylesheet" href="css/style.css"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Explore Data</title>
+    <link rel="stylesheet" href="css/explore.css"/>
 </head>
 <body>
-  <header>
-    <nav>
-      <ul class="nav-tabs">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="explore.html" class="active">Explore more</a></li>
-        <li><a href="about.html">About Us</a></li>
-        <div class="pill"></div>
-      </ul>
-    </nav>
-  </header>
+    <header>
+        <nav>
+            <ul class="navtab">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="explore.html" class="active">Explore more</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <div class="pill"></div>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="scrollspy-nav">
+                <h3>Sections</h3>
+                <ul id="scrollspy-menu">
+                    <li><a href="#national-overview" class="active">National Overview</a></li>
+                    <li><a href="#age-group">Age Group</a></li>
+                    <li><a href="#violation-types">Overview</a></li>
+                </ul>
+            </div>
+        </aside>
+        
+        <main class="content-area">
+            <section id="national-overview" class="section-content">
+                <div class="container">
+                    <h2>National Overview</h2>
+                    <p>Explore nationwide traffic violation statistics and trends</p>
+                </div>
+                <div class="demo">
+                    <p>National overview content goes here. This section shows comprehensive data about traffic violations across the country.</p>
+                    <div class="national-charts">
+                        <svg id="choropleth"></svg>
+                    </div>
+                </div>
+                <div class="container">
+                    <h2>National Overview</h2>
+                </div>
+                <div class="demo">
+                    <div class="national-charts">
+                    
+                    </div>
+                </div>
 
-  <section class="section-content active" id="trends">
-    <div class="container">
-      <h2>Explore Data</h2>
-      <p>Interactive charts and detailed visualizations will go here.</p>
-
+            </section>
+            
+            <section id="age-group" class="section-content">
+                <div class="container">
+                    <h2>Age Group</h2>
+                    <p>Analyse Age group of offenders</p>
+                </div>
+                <div class="demo">
+                    <div class="placeholder-chart">
+                        
+                    </div>
+                </div>
+            </section>
+            
+            <section id="violation-types" class="section-content">
+                <div class="container">
+                    <h2>Overview</h2>
+                    <p>Overview</p>
+                </div>
+                <div class="demo">
+                    <div class="placeholder-chart"></div>
+                </div>
+            </section>
+        </main>
     </div>
-  </section>
-
-  <footer>
-    <p>&copy; 2025 Traffic Violations Data Center. All data is for informational purposes only.</p>
-  </footer>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const navLinks = document.querySelectorAll('.nav-tabs a');
-      const pill = document.querySelector('.pill');
-  
-      function initPill() {
-        const activeTab = document.querySelector('.nav-tabs a.active');
-        positionPill(activeTab);
-      }
-  
-      function positionPill(activeTab) {
-        if (!activeTab || !pill) return;
-  
-        const tabRect = activeTab.getBoundingClientRect();
-        const navRect = document.querySelector('.nav-tabs').getBoundingClientRect();
-  
-        pill.style.width = `${tabRect.width}px`;
-        pill.style.left = `${tabRect.left - navRect.left}px`;
-      }
-  
-      navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          // Allow default anchor behavior (page navigation)
-          navLinks.forEach(l => l.classList.remove('active'));
-          this.classList.add('active');
-          positionPill(this);
-        });
-      });
-  
-      window.addEventListener('resize', function() {
-        const activeTab = document.querySelector('.nav-tabs a.active');
-        positionPill(activeTab);
-      });
-  
-      initPill();
-    });
-  </script>
-  
+    
+    <footer>
+        <p>&copy; 2025 Traffic Violations Data Center. All data is for informational purposes only.</p>
+    </footer>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="js/Choropleth.js"></script>
+    <script src="js/scrollspy.js"></script>
 </body>
 </html>
