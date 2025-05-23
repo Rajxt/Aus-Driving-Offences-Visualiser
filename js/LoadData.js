@@ -13,7 +13,11 @@ export async function loadLine() {
     return [natOver];
 }
 
+export async function loadBar() {
 
+    const natOver = await d3.csv("/data/ageAllages.csv");
+    return [natOver];
+}
 
 
 
