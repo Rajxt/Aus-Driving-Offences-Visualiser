@@ -18,24 +18,35 @@ const color = d3.scaleOrdinal().range(["#6b486b", "#ff8c00", "#a05d56"]);
 
 const xAxis = chart.append("g")
     .attr("transform", `translate(0,${height})`);
-
 const yAxis = chart.append("g");
 
-loadBar().then(data => {
-    const allMonths = Array.from(new Set(data.map(d => d.month))).sort();
-    let currentMonth = allMonths[0];
+const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
 
-    d3.select("#monthLabel").text(currentMonth);
+loadBar().then(data => {
+    // Extract months like "2023-01"
+    const allMonths = Array.from(new Set(data.map(d => d.month))).sort();
+    const monthMap = allMonths.map(d => ({ code: d, label: formatMonth(d) }));
+
+    let currentMonth = monthMap[0].code;
+    d3.select("#monthLabel").text(monthMap[0].label);
 
     const slider = d3.select("#monthSlider")
         .attr("min", 0)
-        .attr("max", allMonths.length - 1)
+        .attr("max", monthMap.length - 1)
         .attr("value", 0)
         .on("input", function () {
-            currentMonth = allMonths[this.value];
+            currentMonth = monthMap[this.value].code;
             updateChart(currentMonth);
-            d3.select("#monthLabel").text(currentMonth);
+            d3.select("#monthLabel").text(monthMap[this.value].label);
         });
+
+    function formatMonth(iso) {
+        const [year, month] = iso.split("-");
+        return `${monthNames[parseInt(month, 10) - 1]} ${year}`;
+    }
 
     function updateChart(month) {
         const filtered = data.filter(d => d.month === month);
