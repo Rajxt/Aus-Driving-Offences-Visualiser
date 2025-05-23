@@ -4,9 +4,9 @@ const margin = { top: 40, right: 30, bottom: 100, left: 60 },
       width = 960 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
 
-const svg = d3.select("BarChart").append("svg")
+const svg = d3.select("#BarChart")
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("height", height + margin.top + margin.bottom);
 
 const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -25,22 +25,20 @@ loadBar().then(data => {
     const allMonths = Array.from(new Set(data.map(d => d.month))).sort();
     let currentMonth = allMonths[0];
 
-    // Create slider
-    const slider = d3.select("BarChart")
-        .append("input")
-        .attr("type", "range")
+    d3.select("#monthLabel").text(currentMonth);
+
+    const slider = d3.select("#monthSlider")
         .attr("min", 0)
         .attr("max", allMonths.length - 1)
         .attr("value", 0)
-        .style("width", "960px")
-        .on("input", function() {
+        .on("input", function () {
             currentMonth = allMonths[this.value];
             updateChart(currentMonth);
+            d3.select("#monthLabel").text(currentMonth);
         });
 
     function updateChart(month) {
         const filtered = data.filter(d => d.month === month);
-
         const grouped = d3.rollup(
             filtered,
             v => ({
@@ -69,21 +67,25 @@ loadBar().then(data => {
         xAxis.transition().call(d3.axisBottom(x0));
         yAxis.transition().call(d3.axisLeft(y));
 
-        const bars = chart.selectAll(".barGroup")
+        const barGroups = chart.selectAll(".barGroup")
             .data(dataset, d => d.ageGroup);
 
-        bars.exit().remove();
+        barGroups.exit().remove();
 
-        const barEnter = bars.enter().append("g")
+        const barEnter = barGroups.enter().append("g")
             .attr("class", "barGroup")
             .attr("transform", d => `translate(${x0(d.ageGroup)},0)`);
 
-        const barsRect = barEnter.merge(bars)
+        barEnter.merge(barGroups)
+            .transition()
+            .attr("transform", d => `translate(${x0(d.ageGroup)},0)`);
+
+        const bars = barEnter.merge(barGroups)
             .selectAll("rect")
             .data(d => keys.map(k => ({ key: k, value: d[k] })));
 
-        barsRect.enter().append("rect")
-            .merge(barsRect)
+        bars.enter().append("rect")
+            .merge(bars)
             .transition()
             .attr("x", d => x1(d.key))
             .attr("y", d => y(d.value))
@@ -91,7 +93,7 @@ loadBar().then(data => {
             .attr("height", d => height - y(d.value))
             .attr("fill", d => color(d.key));
 
-        barsRect.exit().remove();
+        bars.exit().remove();
     }
 
     updateChart(currentMonth);
