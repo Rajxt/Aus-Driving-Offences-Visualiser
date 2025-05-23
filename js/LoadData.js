@@ -9,14 +9,14 @@ export async function loadChoropleth() {
 // Loading data for Line Chart
 export async function loadLine() {
 
-    const natOver = await d3.csv("/data/nationaloverview.csv");
+    const natOver = await d3.csv("data/nationaloverview.csv");
     return [natOver];
 }
 
 // LoadData.js
 export async function loadBar() {
-    const data = await d3.csv("/data/AgewithMonth.csv", d => ({
-        month: d.START_DATE.slice(0, 7), // "2023-01"
+    const data = await d3.csv("data/AgewithMonth.csv", d => ({
+        month: d.START_DATE.slice(0, 7), // e.g., "2023-01"
         ageGroup: d.AGE_GROUP,
         fines: +d.FINES,
         arrests: +d.ARRESTS,
