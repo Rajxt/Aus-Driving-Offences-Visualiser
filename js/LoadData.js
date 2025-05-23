@@ -13,11 +13,20 @@ export async function loadLine() {
     return [natOver];
 }
 
+// LoadData.js
 export async function loadBar() {
-
-    const natOver = await d3.csv("/data/AgewithMonth.csv");
-    return [natOver];
+    const data = await d3.csv("AgewithMonth.csv", d => {
+        return {
+            month: d3.timeFormat("%Y-%m")(new Date(d.START_DATE)),
+            ageGroup: d.AGE_GROUP,
+            fines: +d.FINES,
+            arrests: +d.ARRESTS,
+            charges: +d.CHARGES
+        };
+    });
+    return data;
 }
+
 
 
 
