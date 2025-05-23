@@ -1,11 +1,9 @@
-
-
 import { loadBar } from './LoadData.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     const margin = { top: 40, right: 30, bottom: 100, left: 60 },
       width = 960 - margin.left - margin.right,
-      height = 700 - margin.top - margin.bottom;  // bigger height (700 instead of 500)
+      height = 500 - margin.top - margin.bottom;  // bigger height (700 instead of 500)
 
 
       const svg = d3.select("#BarChart")
@@ -23,6 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
     .domain(["fines", "arrests", "charges"])
     .range(["#6b486b", "#ff8c00", "#a05d56"]);
 
+    const maxValue = d3.max(dataset, d => d3.max(keys, key => d[key]));
+    console.log("Max value:", maxValue);
 
     const xAxis = chart.append("g").attr("transform", `translate(0,${height})`);
     const yAxis = chart.append("g");
