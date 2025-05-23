@@ -21,8 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
     .domain(["fines", "arrests", "charges"])
     .range(["#6b486b", "#ff8c00", "#a05d56"]);
 
-    const maxValue = d3.max(dataset, d => d3.max(keys, key => d[key]));
-    console.log("Max value:", maxValue);
 
     const xAxis = chart.append("g").attr("transform", `translate(0,${height})`);
     const yAxis = chart.append("g");
