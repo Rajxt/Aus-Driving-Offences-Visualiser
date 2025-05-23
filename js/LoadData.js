@@ -15,7 +15,7 @@ export async function loadLine() {
 
 // LoadData.js
 export async function loadBar() {
-    const data = await d3.csv("AgewithMonth.csv", d => ({
+    const data = await d3.csv("/data/AgewithMonth.csv", d => ({
         month: d.START_DATE.slice(0, 7), // "2023-01"
         ageGroup: d.AGE_GROUP,
         fines: +d.FINES,
