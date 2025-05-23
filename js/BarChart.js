@@ -4,7 +4,7 @@ const margin = { top: 40, right: 30, bottom: 100, left: 60 },
       width = 960 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
 
-const svg = d3.select("body").append("svg")
+const svg = d3.select("BarChart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
 
@@ -26,7 +26,7 @@ loadBar().then(data => {
     let currentMonth = allMonths[0];
 
     // Create slider
-    const slider = d3.select("body")
+    const slider = d3.select("BarChart")
         .append("input")
         .attr("type", "range")
         .attr("min", 0)
