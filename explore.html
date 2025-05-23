@@ -41,15 +41,22 @@
 
                 <!-- Choropleth -->
                 <div class="demo">
-
                     <label for="yearSlider" class="form-label">Fines for Year: <span id="yearLabel">2023</span></label>
                     <input type="range" class="form-range" min="2008" max="2023" value="2023" id="yearSlider" />
 
-                    <div class="national-charts">
-                        <svg id="choropleth"></svg>
+                    
+                    <div class="choropleth-wrapper">
+                        <div class="choropleth-container">
+                            <div class="national-charts">
+                                <svg id="choropleth"></svg>
+                            </div>        
+                        </div>
+                        <div class="legend-container">
+                            <div id="legend"></div>
+                        </div>
                     </div>
-                </div>
-
+                    
+                </div>      
                 <!-- Line Chart -->
                 <div class="container">
                     <h2>National Overview</h2>
@@ -59,15 +66,14 @@
                         <option selected>All</option>
                         <option value="Fines">Fines</option>
                         <option value="Charges">Charges</option>
-                        <option value="Charges">Arrests</option>
-                      </select>
+                        <option value="Arrests">Arrests</option>
+                    </select>
                     <div class="national-line">
                         <svg id="line"></svg>       
-                    
                     </div>
                 </div>
-
             </section>
+            
             
             <section id="age-group" class="section-content">
                 <div class="container">
@@ -75,16 +81,14 @@
                     <p>Analyse Age group of offenders</p>
                 </div>
                 <div class="demo">
-                    <div class="national-charts">
-                        
-                    </div>
+                    <div class="national-charts"></div>
                 </div>
             </section>
             
             <section id="violation-types" class="section-content">
                 <div class="container">
                     <h2>Overview</h2>
-                    <p>Overvie</p>
+                    <p>Overview</p>
                 </div>
                 <div class="demo">
                     <div class="placeholder-chart"></div>
@@ -103,4 +107,5 @@
     <script src="js/LoadData.js"></script>
     <script src="js/scrollspy.js"></script>
 </body>
+
 </html>
