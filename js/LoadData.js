@@ -15,17 +15,16 @@ export async function loadLine() {
 
 // LoadData.js
 export async function loadBar() {
-    const data = await d3.csv("AgewithMonth.csv", d => {
-        return {
-            month: d3.timeFormat("%Y-%m")(new Date(d.START_DATE)),
-            ageGroup: d.AGE_GROUP,
-            fines: +d.FINES,
-            arrests: +d.ARRESTS,
-            charges: +d.CHARGES
-        };
-    });
+    const data = await d3.csv("AgewithMonth.csv", d => ({
+        month: d.START_DATE.slice(0, 7), // "2023-01"
+        ageGroup: d.AGE_GROUP,
+        fines: +d.FINES,
+        arrests: +d.ARRESTS,
+        charges: +d.CHARGES
+    }));
     return data;
 }
+
 
 
 
