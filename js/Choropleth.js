@@ -38,12 +38,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const maxVal = d3.max(Array.from(valueByState.values()));
         const minVal = d3.min(Array.from(valueByState.values()));
 
-        // Create intensity scale for opacity/saturation adjustments
+        
         const intensityScale = d3.scaleLinear()
             .domain([minVal || 0, maxVal || 1])
-            .range([0.4, 1.0]); // More pronounced range for better distinction
-
-        // Update paths with enhanced styling
+            .range([0.4, 1.0]);  
+        
         svg.selectAll("path")
             .data(geoData.features)
             .join("path")
@@ -78,10 +77,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     .style("transform","scale(1)");
             });
 
-        // Remove existing tooltips
+            updateLegend(valueByState, year);
+
+
+        
         svg.selectAll("path").select("title").remove();
 
-        // Add enhanced tooltips
+
+         
         svg.selectAll("path")
             .append("title")
             .text(d => {
@@ -91,6 +94,40 @@ document.addEventListener('DOMContentLoaded', function () {
                 return `${name}\n${metric}: ${formattedVal}\nYear: ${year}`;
             });
     }
+
+    function updateLegend(valueByState, year) {
+        const legendContainer = d3.select("#legend");
+        legendContainer.html(""); 
+    
+        legendContainer.append("h4").text(`Fines by State - ${year}`);
+    
+        const entries = Array.from(valueByState.entries())
+            .sort((a, b) => d3.descending(a[1], b[1]));
+    
+        const legendItems = legendContainer
+            .selectAll(".legend-item")
+            .data(entries)
+            .join("div")
+            .attr("class", "legend-item")
+            .style("margin-bottom", "6px");
+    
+        legendItems.append("span")
+            .style("display", "inline-block")
+            .style("width", "16px")
+            .style("height", "16px")
+            .style("margin-right", "6px")
+            .style("vertical-align", "middle")
+            .style("background-color", d => stateColors[d[0]] || '#90a4ae')
+            .style("opacity", d => {
+                const maxVal = d3.max(entries.map(d => d[1]));
+                const minVal = d3.min(entries.map(d => d[1]));
+                return d3.scaleLinear().domain([minVal, maxVal]).range([0.4, 1])(d[1]);
+            });
+    
+        legendItems.append("span")
+            .text(d => `${d[0]}: ${d[1] ? d[1].toLocaleString() : "No data"}`);
+    }
+    
 
     
 
