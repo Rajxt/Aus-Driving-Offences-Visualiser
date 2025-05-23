@@ -4,12 +4,14 @@ import { loadBar } from './LoadData.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     const margin = { top: 40, right: 30, bottom: 100, left: 60 },
-          width = 960 - margin.left - margin.right,
-          height = 500 - margin.top - margin.bottom;
+      width = 960 - margin.left - margin.right,
+      height = 700 - margin.top - margin.bottom;  // bigger height (700 instead of 500)
 
-    const svg = d3.select("#BarChart")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom);
+
+      const svg = d3.select("#BarChart")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);  // set svg height to full
+  
 
     const chart = svg.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -24,10 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const xAxis = chart.append("g").attr("transform", `translate(0,${height})`);
     const yAxis = chart.append("g");
-
-    const maxValue = d3.max(dataset, d => d3.max(keys, key => d[key]));
-    console.log("Max value:", maxValue);
-
 
     const monthNames = [
         "January", "February", "March", "April", "May", "June",
