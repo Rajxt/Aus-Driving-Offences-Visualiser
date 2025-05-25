@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const margin = { top: 40, right: 30, bottom: 70, left: 60 },
-      width = 800 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+    const margin = { top: 40, right: 30, bottom: 70, left: 50 },
+      width = 680 - margin.left - margin.right,
+      height = 380 - margin.top - margin.bottom;
   
     const svg = d3.select("#BarChart")
       .attr("width", width + margin.left + margin.right)
@@ -10,11 +10,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const chart = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
   
-    const keys = ["FINES", "ARRESTS", "CHARGES"];  // Use uppercase to match CSV columns
+    const keys = ["FINES", "ARRESTS", "CHARGES"];
   
-    // Load CSV data
     d3.csv("data/AgewithMonth.csv").then(rawData => {
-      // Aggregate data by age group
       const dataMap = d3.rollup(
         rawData,
         v => ({
@@ -25,18 +23,14 @@ document.addEventListener('DOMContentLoaded', function () {
         d => d.AGE_GROUP
       );
   
-      // Convert map to array
       const data = Array.from(dataMap, ([ageGroup, values]) => ({ ageGroup, ...values }));
-  
-      // Sort the age groups if needed (optional)
       const ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
       data.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
   
-      // Scales
       const x0 = d3.scaleBand()
         .domain(data.map(d => d.ageGroup))
         .range([0, width])
-        .paddingInner(0.1);
+        .paddingInner(0.3);
   
       const x1 = d3.scaleBand()
         .domain(keys)
@@ -44,8 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .padding(0.05);
   
       const y = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d3.max(keys, key => d[key]))])
-        .nice()
+        .domain([0, 100])
         .range([height, 0]);
   
       const color = d3.scaleOrdinal()
@@ -63,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
       chart.append("g")
         .call(d3.axisLeft(y).ticks(5));
   
-      // Bars
+      // Bar groups
       const barGroups = chart.selectAll(".barGroup")
         .data(data)
         .enter()
@@ -76,10 +69,44 @@ document.addEventListener('DOMContentLoaded', function () {
         .enter()
         .append("rect")
         .attr("x", d => x1(d.key))
-        .attr("y", d => y(d.value))
+        .attr("y", d => y(Math.min(d.value, 100)))
         .attr("width", x1.bandwidth())
-        .attr("height", d => height - y(d.value))
+        .attr("height", d => height - y(Math.min(d.value, 100)))
         .attr("fill", d => color(d.key));
+  
+      // Overflow arrows (▲)
+      barGroups.selectAll(".overflow-marker")
+        .data(d => keys.map(key => ({ key, value: d[key] })))
+        .enter()
+        .filter(d => d.value > 100)
+        .append("text")
+        .attr("x", d => x1(d.key) + x1.bandwidth() / 2)
+        .attr("y", y(100) - 5)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "12px")
+        .attr("fill", "black")
+        .text("▲");
+  
+      // Legend 
+      const legend = svg.append("g")
+        .attr("transform", `translate(${width + margin.left + 10}, ${margin.top})`);
+  
+      keys.forEach((key, i) => {
+        const legendRow = legend.append("g")
+          .attr("transform", `translate(0, ${i * 20})`);
+  
+        legendRow.append("rect")
+          .attr("width", 12)
+          .attr("height", 12)
+          .attr("fill", color(key));
+  
+        legendRow.append("text")
+          .attr("x", 18)
+          .attr("y", 10)
+          .attr("text-anchor", "start")
+          .style("font-size", "12px")
+          .text(key);
+      });
     }).catch(error => {
       console.error("Error loading the CSV file: ", error);
     });
