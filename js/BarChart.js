@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const margin = { top: 40, right: 30, bottom: 70, left: 50 },
+  const margin = { top: 40, right: 30, bottom: 70, left: 75 },
     width = 680 - margin.left - margin.right,
     height = 380 - margin.top - margin.bottom;
 
