@@ -128,9 +128,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .text(d => `${d[0]}: ${d[1] ? d[1].toLocaleString() : "No data"}`);
     }
     
-
-    
-
     loadChoropleth().then(([geo, d]) => {
         geoData = geo;
         data = d;

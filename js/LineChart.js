@@ -1,4 +1,4 @@
-import { loadLine } from './LoadData.js';
+import { loadChoropleth } from './LoadData.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     const width = 800;
@@ -9,58 +9,141 @@ document.addEventListener('DOMContentLoaded', function () {
         .attr("width", width)
         .attr("height", height);
 
-    loadLine().then(([natOver]) => {
-        
-        const finesByYear = d3.rollup(
-            natOver,
-            v => d3.sum(v, d => +d.FINES),
-            d => +d.YEAR
-        );
+    let tooltip = d3.select(".line-chart-tooltip");
+    if (tooltip.empty()) {
+        tooltip = d3.select("body").append("div")
+            .attr("class", "line-chart-tooltip")
+            .style("position", "absolute")
+            .style("visibility", "hidden")
+            .style("background", "rgba(0, 0, 0, 0.9)")
+            .style("color", "white")
+            .style("padding", "12px")
+            .style("border-radius", "8px")
+            .style("font-size", "13px")
+            .style("pointer-events", "none")
+            .style("z-index", "1000")
+            .style("box-shadow", "0 2px 10px rgba(0,0,0,0.3)")
+            .style("border", "1px solid rgba(255,255,255,0.2)");
+    }
 
-        const data = Array.from(finesByYear, ([year, total]) => ({ year, total }))
-            .sort((a, b) => a.year - b.year); 
+    loadChoropleth().then(([geoData, csvData]) => {
+        const xScale = d3.scaleLinear().range([margin.left, width - margin.right]);
+        const yScale = d3.scaleLinear().range([height - margin.bottom, margin.top]);
 
-        // 2. Set up scales
-        const xScale = d3.scaleLinear()
-            .domain(d3.extent(data, d => d.year))
-            .range([margin.left, width - margin.right]);
+        const xAxisGroup = svg.append("g").attr("transform", `translate(0,${height - margin.bottom})`);
+        const yAxisGroup = svg.append("g").attr("transform", `translate(${margin.left},0)`);
 
-        const yScale = d3.scaleLinear()
-            .domain([0, d3.max(data, d => d.total)])
-            .nice()
-            .range([height - margin.bottom, margin.top]);
+        const linePathGroup = svg.append("g");
+        const circleGroup = svg.append("g");
 
-        // 3. Draw axes
-        svg.append("g")
-            .attr("transform", `translate(0,${height - margin.bottom})`)
-            .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+        const stateSelect = document.getElementById("state");
+        const states = Array.from(new Set(csvData.map(d => d.STATE_NAME))).sort();
 
-        svg.append("g")
-            .attr("transform", `translate(${margin.left},0)`)
-            .call(d3.axisLeft(yScale));
+        states.forEach(state => {
+            const option = document.createElement("option");
+            option.value = state;
+            option.textContent = state;
+            stateSelect.appendChild(option);
+        });
 
-        // 4. Draw line
-        const line = d3.line()
-            .x(d => xScale(d.year))
-            .y(d => yScale(d.total));
+        function updateChart(selectedState) {
+            svg.selectAll("path").remove();
+            circleGroup.selectAll("*").remove();
 
-        svg.append("path")
-            .datum(data)
-            .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr("stroke-width", 2)
-            .attr("d", line);
+            const filtered = csvData.filter(d => d.STATE_NAME === selectedState);
+            console.log("Filtered Data for", selectedState, filtered);
 
-        // 5. Add circles on points
-        svg.selectAll("circle")
-            .data(data)
-            .enter()
-            .append("circle")
-            .attr("cx", d => xScale(d.year))
-            .attr("cy", d => yScale(d.total))
-            .attr("r", 4)
-            .attr("fill", "steelblue")
-            .append("title")
-            .text(d => `${d.year}: ${d.total}`);
+            const grouped = d3.rollup(
+                filtered,
+                v => d3.sum(v, d => +d.FINES),
+                d => +d.YEAR
+            );
+
+            const data = Array.from(grouped, ([year, total]) => ({ year, total }))
+                .sort((a, b) => a.year - b.year);
+
+            xScale.domain(d3.extent(data, d => d.year));
+            yScale.domain([0, d3.max(data, d => d.total)]).nice();
+
+            xAxisGroup.call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+            yAxisGroup.call(d3.axisLeft(yScale));
+
+            const line = d3.line()
+                .x(d => xScale(d.year))
+                .y(d => yScale(d.total))
+                .curve(d3.curveMonotoneX);
+
+            const path = linePathGroup.append("path")
+                .datum(data)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 3)
+                .attr("d", line);
+
+            const totalLength = path.node().getTotalLength();
+            path
+                .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
+                .attr("stroke-dashoffset", totalLength)
+                .transition()
+                .duration(1500)
+                .attr("stroke-dashoffset", 0);
+
+            const circles = circleGroup.selectAll("circle")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("cx", d => xScale(d.year))
+                .attr("cy", d => yScale(d.total))
+                .attr("r", 0)
+                .attr("fill", "steelblue")
+                .attr("stroke", "white")
+                .attr("stroke-width", 2)
+                .style("cursor", "pointer")
+                .style("opacity", 0);
+
+            circles.transition()
+                .delay((d, i) => i * 100)
+                .duration(500)
+                .attr("r", 5)
+                .style("opacity", 1);
+
+            circles
+                .on("mouseover", function (event, d) {
+                    d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .attr("r", 8)
+                        .attr("fill", "#ff6b35");
+
+                    tooltip
+                        .style("visibility", "visible")
+                        .html(`
+                            <div style="font-weight: bold; margin-bottom: 5px;">Year: ${d.year}</div>
+                            <div>Total FINES: ${d.total.toLocaleString()}</div>
+                        `)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 10) + "px");
+                })
+                .on("mousemove", function (event) {
+                    tooltip
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 10) + "px");
+                })
+                .on("mouseout", function () {
+                    d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .attr("r", 5)
+                        .attr("fill", "steelblue");
+
+                    tooltip.style("visibility", "hidden");
+                });
+        }
+
+        updateChart(states[0]);
+
+        stateSelect.addEventListener("change", () => {
+            updateChart(stateSelect.value);
+        });
     });
 });
