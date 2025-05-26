@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const chart = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
   
-    const keys = ["FINES", "ARRESTS", "CHARGES"];
+    const keys = ["ARRESTS", "CHARGES"];
   
     d3.csv("data/Age.csv").then(rawData => {
       const dataMap = d3.rollup(
@@ -37,9 +37,11 @@ document.addEventListener('DOMContentLoaded', function () {
         .range([0, x0.bandwidth()])
         .padding(0.05);
   
-      const y = d3.scaleLinear()
-        .domain([0, 100])
-        .range([height, 0]);
+        const maxY = d3.max(data, d => d3.max(keys, key => d[key]));
+        const y = d3.scaleLinear()
+          .domain([0, maxY * 1.1]) // add 10% padding
+          .range([height, 0]);
+        
   
       const color = d3.scaleOrdinal()
         .domain(keys)
@@ -64,15 +66,16 @@ document.addEventListener('DOMContentLoaded', function () {
         .attr("class", "barGroup")
         .attr("transform", d => `translate(${x0(d.ageGroup)},0)`);
   
-      barGroups.selectAll("rect")
+        barGroups.selectAll("rect")
         .data(d => keys.map(key => ({ key, value: d[key] })))
         .enter()
         .append("rect")
         .attr("x", d => x1(d.key))
-        .attr("y", d => y(Math.min(d.value, 100)))
+        .attr("y", d => y(d.value))
         .attr("width", x1.bandwidth())
-        .attr("height", d => height - y(Math.min(d.value, 100)))
+        .attr("height", d => height - y(d.value))
         .attr("fill", d => color(d.key));
+      
   
       // Overflow arrows (▲)
       barGroups.selectAll(".overflow-marker")
