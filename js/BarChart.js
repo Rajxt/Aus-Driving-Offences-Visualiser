@@ -10,31 +10,37 @@ document.addEventListener('DOMContentLoaded', function () {
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  const keys = ["ARRESTS", "CHARGES"];  // Use uppercase to match CSV columns
+  let allData = [];
 
-  // Load CSV data
+  // Load CSV and prepare data
   d3.csv("data/Age.csv").then(rawData => {
-    // Aggregate data by age group
     const dataMap = d3.rollup(
       rawData,
       v => ({
         FINES: d3.sum(v, d => +d.FINES),
-        ARRESTS: d3.sum(v, d => +d.ARRESTS),
         CHARGES: d3.sum(v, d => +d.CHARGES),
       }),
       d => d.AGE_GROUP
     );
 
-    // Convert map to array
-    const data = Array.from(dataMap, ([ageGroup, values]) => ({ ageGroup, ...values }));
-
-    // Optional: Sort the age groups
     const ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
-    data.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
+    allData = Array.from(dataMap, ([ageGroup, values]) => ({ ageGroup, ...values }));
+    allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
 
-    // Scales
+    renderChart(["FINES"]); // default
+
+    // Toggle listener
+    document.getElementById("toggleCharges").addEventListener("change", function () {
+      const keys = this.checked ? ["CHARGES"] : ["FINES"];
+      renderChart(keys);
+    });
+  });
+
+  function renderChart(keys) {
+    chart.selectAll("*").remove(); // Clear chart
+
     const x0 = d3.scaleBand()
-      .domain(data.map(d => d.ageGroup))
+      .domain(allData.map(d => d.ageGroup))
       .range([0, width])
       .paddingInner(0.1);
 
@@ -44,15 +50,15 @@ document.addEventListener('DOMContentLoaded', function () {
       .padding(0.05);
 
     const y = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d3.max(keys, key => +d[key]))])
+      .domain([0, d3.max(allData, d => d3.max(keys, key => +d[key]))])
       .nice()
       .range([height, 0]);
 
     const color = d3.scaleOrdinal()
-      .domain(keys)
-      .range(["#6b486b", "#ff8c00"]);
+      .domain(["FINES", "CHARGES"])
+      .range(["#6b486b", "#4682b4"]);
 
-    // X-axis
+    // X Axis
     chart.append("g")
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(x0))
@@ -60,20 +66,20 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("transform", "rotate(-40)")
       .style("text-anchor", "end");
 
-    // Y-axis
+    // Y Axis
     chart.append("g")
       .call(d3.axisLeft(y).ticks(5));
 
     // Bar groups
     const barGroups = chart.selectAll(".barGroup")
-      .data(data)
+      .data(allData)
       .enter()
       .append("g")
       .attr("class", "barGroup")
       .attr("transform", d => `translate(${x0(d.ageGroup)},0)`);
 
     barGroups.selectAll("rect")
-      .data(d => keys.map(key => ({ key, value: +d[key] }))) // Ensure values are numbers
+      .data(d => keys.map(key => ({ key, value: +d[key] })))
       .enter()
       .append("rect")
       .attr("x", d => x1(d.key))
@@ -81,7 +87,5 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("width", x1.bandwidth())
       .attr("height", d => height - y(d.value))
       .attr("fill", d => color(d.key));
-  }).catch(error => {
-    console.error("Error loading the CSV file: ", error);
-  });
+  }
 });
