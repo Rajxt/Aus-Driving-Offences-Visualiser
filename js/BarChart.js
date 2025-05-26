@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
   
     const keys = ["FINES", "ARRESTS", "CHARGES"];
   
-    d3.csv("data/AgewithMonth.csv").then(rawData => {
+    d3.csv("data/Age.csv").then(rawData => {
       const dataMap = d3.rollup(
         rawData,
         v => ({
