@@ -375,6 +375,10 @@
         .legend-container {
             animation: slideInRight 0.8s ease-out 0.2s forwards;
         }
+
+        
+          
+        
         
 
         @keyframes slideInLeft {

@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
         .attr("width", width)
         .attr("height", height);
 
+    const chartGroup = svg.append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
     let tooltip = d3.select(".line-chart-tooltip");
     if (tooltip.empty()) {
         tooltip = d3.select("body").append("div")
@@ -27,14 +30,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     loadChoropleth().then(([geoData, csvData]) => {
-        const xScale = d3.scaleLinear().range([margin.left, width - margin.right]);
-        const yScale = d3.scaleLinear().range([height - margin.bottom, margin.top]);
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
 
-        const xAxisGroup = svg.append("g").attr("transform", `translate(0,${height - margin.bottom})`);
-        const yAxisGroup = svg.append("g").attr("transform", `translate(${margin.left},0)`);
+        const xScale = d3.scaleLinear().range([0, innerWidth]);
+        const yScale = d3.scaleLinear().range([innerHeight, 0]);
 
-        const linePathGroup = svg.append("g");
-        const circleGroup = svg.append("g");
+        const xAxisGroup = chartGroup.append("g")
+            .attr("transform", `translate(0,${innerHeight})`);
+        const yAxisGroup = chartGroup.append("g");
+
+       
+
+        const linePathGroup = chartGroup.append("g");
+        const circleGroup = chartGroup.append("g");
 
         const stateSelect = document.getElementById("state");
         const states = Array.from(new Set(csvData.map(d => d.STATE_NAME))).sort();
@@ -47,12 +56,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         function updateChart(selectedState) {
-            svg.selectAll("path").remove();
+            linePathGroup.selectAll("*").remove();
             circleGroup.selectAll("*").remove();
 
             const filtered = csvData.filter(d => d.STATE_NAME === selectedState);
-            console.log("Filtered Data for", selectedState, filtered);
-
             const grouped = d3.rollup(
                 filtered,
                 v => d3.sum(v, d => +d.FINES),

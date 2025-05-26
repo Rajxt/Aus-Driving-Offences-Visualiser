@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'ACT': '#90caf9'    
     };
 
-    function updateChoropleth(metric = 'FINES', year = 2023) {
+    function updateChoropleth(metric = 'FINES', year) {
         const filteredData = data.filter(d => +d.YEAR === +year);
         const valueByState = d3.rollup(
             filteredData,
@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const maxVal = d3.max(Array.from(valueByState.values()));
         const minVal = d3.min(Array.from(valueByState.values()));
-
         
         const intensityScale = d3.scaleLinear()
             .domain([minVal || 0, maxVal || 1])
