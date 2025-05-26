@@ -88,18 +88,15 @@
                         <span class="slider"></span>
                         <span class="toggle-label">Show Charges Instead</span>
                       </label>
+                      <label for="sortOrder">Sort bars by value:</label>
+                        <select id="sortOrder">
+                        <option value="none">No Sort</option>
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                        </select>
                     <div class="national-charts">
                         <svg id="BarChart"></svg>
-                        <div id="tooltip" style="
-  position: absolute;
-  background-color: white;
-  border: 1px solid #ccc;
-  padding: 6px 8px;
-  font-size: 12px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s;
-"></div>
+                        <div id="tooltip"></div>
 
                     </div>                    
                 </div>
