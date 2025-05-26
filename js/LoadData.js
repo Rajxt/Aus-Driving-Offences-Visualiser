@@ -14,7 +14,7 @@ export async function loadLine() {
 }
 
 // LoadData.js
-export async function loadLine() {
+export async function loadBar() {
 
     const Barchart = await d3.csv("data/age.csv");
     return [Barchart];
