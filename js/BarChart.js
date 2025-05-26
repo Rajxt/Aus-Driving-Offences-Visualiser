@@ -10,20 +10,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  const tooltip = d3.select("#tooltip")
-    .style("position", "absolute")
-    .style("background", "#fff")
-    .style("padding", "8px")
-    .style("border", "1px solid #ccc")
-    .style("border-radius", "4px")
-    .style("pointer-events", "none")
-    .style("opacity", 0);
-
   let allData = [];
-  let currentKeys = ["FINES"];
+  let currentKeys = ["FINES"]; // which key to show
   let ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
 
   d3.csv("data/age.csv").then(rawData => {
+    // Aggregate data by AGE_GROUP
     const dataMap = d3.rollup(
       rawData,
       v => ({
@@ -34,15 +26,19 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 
     allData = Array.from(dataMap, ([ageGroup, values]) => ({ ageGroup, ...values }));
+
+    // Initial sort by ageOrder
     allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
 
     renderChart(currentKeys);
 
+    // Toggle checkbox listener for FINES/CHARGES
     document.getElementById("toggleCharges").addEventListener("change", function () {
       currentKeys = this.checked ? ["CHARGES"] : ["FINES"];
       applySortingAndRender();
     });
 
+    // Sort dropdown listener for ascending/descending/no sort
     document.getElementById("sortOrder").addEventListener("change", function () {
       applySortingAndRender();
     });
@@ -55,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
       } else if (sortOrder === "desc") {
         allData.sort((a, b) => b[currentKeys[0]] - a[currentKeys[0]]);
       } else {
+        // no sort, keep age order
         allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
       }
 
@@ -138,25 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("width", x1.bandwidth())
       .attr("y", y(0))
       .attr("height", 0)
-      .attr("fill", d => color(d.key))
-      .on("mouseover", function (event, d) {
-        tooltip.transition().duration(200).style("opacity", 0.9);
-        tooltip.html(`
-          <strong>Age Group:</strong> ${d.ageGroup}<br/>
-          <strong>${d.key}:</strong> ${d.value.toLocaleString()}
-        `)
-          .style("left", (event.pageX + 15) + "px")
-          .style("top", (event.pageY - 28) + "px");
-        d3.select(this).attr("opacity", 0.8);
-      })
-      .on("mousemove", function (event) {
-        tooltip.style("left", (event.pageX + 15) + "px")
-               .style("top", (event.pageY - 28) + "px");
-      })
-      .on("mouseout", function () {
-        tooltip.transition().duration(300).style("opacity", 0);
-        d3.select(this).attr("opacity", 1);
-      });
+      .attr("fill", d => color(d.key));
 
     barsEnter.merge(bars)
       .transition()
