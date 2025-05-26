@@ -10,15 +10,20 @@ document.addEventListener('DOMContentLoaded', function () {
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
+  const tooltip = d3.select("#tooltip")
+    .style("position", "absolute")
+    .style("background", "#fff")
+    .style("padding", "8px")
+    .style("border", "1px solid #ccc")
+    .style("border-radius", "4px")
+    .style("pointer-events", "none")
+    .style("opacity", 0);
+
   let allData = [];
-  let currentKeys = ["FINES"]; // which key to show
+  let currentKeys = ["FINES"];
   let ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
 
-  // Tooltip reference
-  const tooltip = d3.select("#tooltip");
-
   d3.csv("data/age.csv").then(rawData => {
-    // Aggregate data by AGE_GROUP
     const dataMap = d3.rollup(
       rawData,
       v => ({
@@ -29,19 +34,15 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 
     allData = Array.from(dataMap, ([ageGroup, values]) => ({ ageGroup, ...values }));
-
-    // Initial sort by ageOrder
     allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
 
     renderChart(currentKeys);
 
-    // Toggle checkbox listener for FINES/CHARGES
     document.getElementById("toggleCharges").addEventListener("change", function () {
       currentKeys = this.checked ? ["CHARGES"] : ["FINES"];
       applySortingAndRender();
     });
 
-    // Sort dropdown listener for ascending/descending/no sort
     document.getElementById("sortOrder").addEventListener("change", function () {
       applySortingAndRender();
     });
@@ -54,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function () {
       } else if (sortOrder === "desc") {
         allData.sort((a, b) => b[currentKeys[0]] - a[currentKeys[0]]);
       } else {
-        // no sort, keep age order
         allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
       }
 
@@ -63,10 +63,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   function renderChart(keys) {
-    // Clear chart with transition on exit
     const duration = 800;
 
-    // Update scales
     const x0 = d3.scaleBand()
       .domain(allData.map(d => d.ageGroup))
       .range([0, width])
@@ -86,11 +84,9 @@ document.addEventListener('DOMContentLoaded', function () {
       .domain(["FINES", "CHARGES"])
       .range(["#6b486b", "#4682b4"]);
 
-    // Remove old axes first (for clean redraw)
     chart.selectAll(".x-axis").remove();
     chart.selectAll(".y-axis").remove();
 
-    // X Axis
     chart.append("g")
       .attr("class", "x-axis")
       .attr("transform", `translate(0,${height})`)
@@ -99,43 +95,35 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("transform", "rotate(-40)")
       .style("text-anchor", "end");
 
-    // Y Axis
     chart.append("g")
       .attr("class", "y-axis")
       .call(d3.axisLeft(y).ticks(5));
 
-    // DATA JOIN for bar groups
     const barGroups = chart.selectAll(".barGroup")
       .data(allData, d => d.ageGroup);
 
-    // EXIT old groups
     barGroups.exit()
       .transition()
       .duration(duration / 2)
       .attr("opacity", 0)
       .remove();
 
-    // ENTER new groups
     const barGroupsEnter = barGroups.enter()
       .append("g")
       .attr("class", "barGroup")
       .attr("opacity", 0)
       .attr("transform", d => `translate(${x0(d.ageGroup)},0)`);
 
-    // MERGE enter + update groups
     const barGroupsMerge = barGroupsEnter.merge(barGroups);
 
-    // Transition groups to new positions and fade in
     barGroupsMerge.transition()
       .duration(duration)
       .attr("transform", d => `translate(${x0(d.ageGroup)},0)`)
       .attr("opacity", 1);
 
-    // DATA JOIN for bars inside groups
     const bars = barGroupsMerge.selectAll("rect")
       .data(d => keys.map(key => ({ key, value: +d[key], ageGroup: d.ageGroup })), d => d.key);
 
-    // EXIT old bars
     bars.exit()
       .transition()
       .duration(duration / 2)
@@ -144,7 +132,6 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("opacity", 0)
       .remove();
 
-    // ENTER new bars
     const barsEnter = bars.enter()
       .append("rect")
       .attr("x", d => x1(d.key))
@@ -153,23 +140,24 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("height", 0)
       .attr("fill", d => color(d.key))
       .on("mouseover", function (event, d) {
-        tooltip.style("opacity", 1)
-          .html(`<strong>${d.key}</strong><br>Age: ${d.ageGroup}<br>Value: ${d.value}`)
-          .style("left", (event.pageX + 10) + "px")
+        tooltip.transition().duration(200).style("opacity", 0.9);
+        tooltip.html(`
+          <strong>Age Group:</strong> ${d.ageGroup}<br/>
+          <strong>${d.key}:</strong> ${d.value.toLocaleString()}
+        `)
+          .style("left", (event.pageX + 15) + "px")
           .style("top", (event.pageY - 28) + "px");
-        d3.select(this).attr("fill", d3.color(color(d.key)).darker(1));
+        d3.select(this).attr("opacity", 0.8);
       })
       .on("mousemove", function (event) {
-        tooltip
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY - 28) + "px");
+        tooltip.style("left", (event.pageX + 15) + "px")
+               .style("top", (event.pageY - 28) + "px");
       })
-      .on("mouseout", function (event, d) {
-        tooltip.style("opacity", 0);
-        d3.select(this).attr("fill", color(d.key));
+      .on("mouseout", function () {
+        tooltip.transition().duration(300).style("opacity", 0);
+        d3.select(this).attr("opacity", 1);
       });
 
-    // MERGE enter + update bars and transition to new height and position
     barsEnter.merge(bars)
       .transition()
       .duration(duration)
