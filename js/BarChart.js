@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
   // Tooltip setup
-  const tooltipGroup = chart.append("g")
+  const tooltipGroup = svg.append("g")  // Append directly to SVG for top layer
     .style("pointer-events", "none")
     .style("display", "none");
 
@@ -28,10 +28,11 @@ document.addEventListener('DOMContentLoaded', function () {
     .attr("y", 15);
 
   let allData = [];
-  let currentKeys = ["FINES"];
+  let currentKeys = ["FINES"]; // which key to show
   let ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
 
   d3.csv("data/age.csv").then(rawData => {
+    // Aggregate data by AGE_GROUP
     const dataMap = d3.rollup(
       rawData,
       v => ({
@@ -42,14 +43,19 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 
     allData = Array.from(dataMap, ([ageGroup, values]) => ({ ageGroup, ...values }));
+
+    // Initial sort by ageOrder
     allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
+
     renderChart(currentKeys);
 
+    // Toggle checkbox listener for FINES/CHARGES
     document.getElementById("toggleCharges").addEventListener("change", function () {
       currentKeys = this.checked ? ["CHARGES"] : ["FINES"];
       applySortingAndRender();
     });
 
+    // Sort dropdown listener for ascending/descending/no sort
     document.getElementById("sortOrder").addEventListener("change", function () {
       applySortingAndRender();
     });
@@ -62,8 +68,10 @@ document.addEventListener('DOMContentLoaded', function () {
       } else if (sortOrder === "desc") {
         allData.sort((a, b) => b[currentKeys[0]] - a[currentKeys[0]]);
       } else {
+        // no sort, keep age order
         allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
       }
+
       renderChart(currentKeys);
     }
   });
@@ -147,9 +155,11 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("fill", d => color(d.key));
 
     barsEnter.merge(bars)
-      .on("mouseover", function(event, d) {
-        // Bring bar to front
+      .on("mouseover", function (event, d) {
+        // Bring hovered bar to front
         this.parentNode.appendChild(this);
+        // Bring tooltipGroup to top of SVG
+        svg.node().appendChild(tooltipGroup.node());
 
         tooltipGroup.style("display", null);
         tooltipText.text(`${d.key}: ${d.value}`);
@@ -162,23 +172,25 @@ document.addEventListener('DOMContentLoaded', function () {
         const barX = +d3.select(this).attr("x");
         const barY = +d3.select(this).attr("y");
 
-        const tooltipX = barX + x1.bandwidth() / 2 - (textBBox.width + 10) / 2;
-        const tooltipY = barY - textBBox.height - 12;
+        // Position tooltip above the bar, centered horizontally
+        const tooltipX = margin.left + x0(d.ageGroup) + barX + x1.bandwidth() / 2 - (textBBox.width + 10) / 2;
+        const tooltipY = margin.top + barY - textBBox.height - 12;
 
         tooltipGroup.attr("transform", `translate(${tooltipX},${tooltipY})`);
 
-        // Change fill color to lighter color on hover
+        // Highlight bar color (brighter)
         d3.select(this)
           .transition()
           .duration(200)
           .attr("fill", d3.color(color(d.key)).brighter(1));
       })
-      .on("mouseout", function(event, d) {
+      .on("mouseout", function () {
         tooltipGroup.style("display", "none");
+        // Reset bar color to original
         d3.select(this)
           .transition()
           .duration(200)
-          .attr("fill", color(d.key));
+          .attr("fill", d => color(d.key));
       })
       .transition()
       .duration(duration)
