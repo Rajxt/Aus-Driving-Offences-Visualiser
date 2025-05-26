@@ -81,8 +81,8 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("class", "barGroup")
       .attr("transform", d => `translate(${x0(d.ageGroup)},0)`);
   
-    barGroups.selectAll("rect")
-      .data(d => keys.map(key => ({ key, value: +d[key], group: d.ageGroup })))
+      barGroups.selectAll("rect")
+      .data(d => keys.map(key => ({ key, value: +d[key], ageGroup: d.ageGroup })))  // add ageGroup for tooltip
       .enter()
       .append("rect")
       .attr("x", d => x1(d.key))
@@ -90,19 +90,21 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("width", x1.bandwidth())
       .attr("height", d => height - y(d.value))
       .attr("fill", d => color(d.key))
-      .on("mouseover", function (event, d) {
-        tooltip.transition().duration(200).style("opacity", 0.9);
-        tooltip.html(`<strong>${d.key}</strong><br/>${d.group}: ${d.value}`)
+      .on("mouseover", function(event, d) {
+        tooltip.style("opacity", 1)
+          .html(`<strong>${d.key}</strong><br>Age: ${d.ageGroup}<br>Value: ${d.value}`)
           .style("left", (event.pageX + 10) + "px")
           .style("top", (event.pageY - 28) + "px");
+        d3.select(this).attr("fill", d3.color(color(d.key)).darker(1));
       })
-      .on("mousemove", function (event) {
+      .on("mousemove", function(event) {
         tooltip
           .style("left", (event.pageX + 10) + "px")
           .style("top", (event.pageY - 28) + "px");
       })
-      .on("mouseout", function () {
-        tooltip.transition().duration(300).style("opacity", 0);
+      .on("mouseout", function(event, d) {
+        tooltip.style("opacity", 0);
+        d3.select(this).attr("fill", color(d.key));
       });
   }
   
