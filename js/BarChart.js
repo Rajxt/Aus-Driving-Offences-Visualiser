@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let allData = [];
 
   // Load CSV and prepare data
-  d3.csv("data/Age.csv").then(rawData => {
+  d3.csv("data/age.csv").then(rawData => {
     const dataMap = d3.rollup(
       rawData,
       v => ({
