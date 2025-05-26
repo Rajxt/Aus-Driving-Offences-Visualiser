@@ -10,6 +10,23 @@ document.addEventListener('DOMContentLoaded', function () {
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
+  // Tooltip setup
+  const tooltipGroup = chart.append("g")
+    .style("pointer-events", "none")
+    .style("display", "none");
+
+  const tooltipRect = tooltipGroup.append("rect")
+    .attr("fill", "black")
+    .attr("rx", 4)
+    .attr("ry", 4)
+    .attr("opacity", 0.75);
+
+  const tooltipText = tooltipGroup.append("text")
+    .attr("fill", "white")
+    .attr("font-size", "12px")
+    .attr("x", 5)
+    .attr("y", 15);
+
   let allData = [];
   let currentKeys = ["FINES"]; // which key to show
   let ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
@@ -138,6 +155,21 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("fill", d => color(d.key));
 
     barsEnter.merge(bars)
+      .on("mouseover", function (event, d) {
+        tooltipGroup.style("display", null);
+        tooltipText.text(`${d.key}: ${d.value}`);
+        const textBBox = tooltipText.node().getBBox();
+        tooltipRect
+          .attr("width", textBBox.width + 10)
+          .attr("height", textBBox.height + 6);
+      })
+      .on("mousemove", function (event, d) {
+        const [x, yPos] = d3.pointer(event);
+        tooltipGroup.attr("transform", `translate(${x + 10},${yPos - 10})`);
+      })
+      .on("mouseout", function () {
+        tooltipGroup.style("display", "none");
+      })
       .transition()
       .duration(duration)
       .attr("x", d => x1(d.key))
