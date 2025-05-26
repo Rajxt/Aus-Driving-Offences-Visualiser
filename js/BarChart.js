@@ -38,26 +38,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function renderChart(keys) {
     chart.selectAll("*").remove(); // Clear chart
-
+  
     const x0 = d3.scaleBand()
       .domain(allData.map(d => d.ageGroup))
       .range([0, width])
       .paddingInner(0.1);
-
+  
     const x1 = d3.scaleBand()
       .domain(keys)
       .range([0, x0.bandwidth()])
       .padding(0.05);
-
+  
     const y = d3.scaleLinear()
       .domain([0, d3.max(allData, d => d3.max(keys, key => +d[key]))])
       .nice()
       .range([height, 0]);
-
+  
     const color = d3.scaleOrdinal()
       .domain(["FINES", "CHARGES"])
       .range(["#6b486b", "#4682b4"]);
-
+  
     // X Axis
     chart.append("g")
       .attr("transform", `translate(0,${height})`)
@@ -65,11 +65,14 @@ document.addEventListener('DOMContentLoaded', function () {
       .selectAll("text")
       .attr("transform", "rotate(-40)")
       .style("text-anchor", "end");
-
+  
     // Y Axis
     chart.append("g")
       .call(d3.axisLeft(y).ticks(5));
-
+  
+    // Tooltip reference
+    const tooltip = d3.select("#tooltip");
+  
     // Bar groups
     const barGroups = chart.selectAll(".barGroup")
       .data(allData)
@@ -77,15 +80,30 @@ document.addEventListener('DOMContentLoaded', function () {
       .append("g")
       .attr("class", "barGroup")
       .attr("transform", d => `translate(${x0(d.ageGroup)},0)`);
-
+  
     barGroups.selectAll("rect")
-      .data(d => keys.map(key => ({ key, value: +d[key] })))
+      .data(d => keys.map(key => ({ key, value: +d[key], group: d.ageGroup })))
       .enter()
       .append("rect")
       .attr("x", d => x1(d.key))
       .attr("y", d => y(d.value))
       .attr("width", x1.bandwidth())
       .attr("height", d => height - y(d.value))
-      .attr("fill", d => color(d.key));
+      .attr("fill", d => color(d.key))
+      .on("mouseover", function (event, d) {
+        tooltip.transition().duration(200).style("opacity", 0.9);
+        tooltip.html(`<strong>${d.key}</strong><br/>${d.group}: ${d.value}`)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 28) + "px");
+      })
+      .on("mousemove", function (event) {
+        tooltip
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 28) + "px");
+      })
+      .on("mouseout", function () {
+        tooltip.transition().duration(300).style("opacity", 0);
+      });
   }
+  
 });
