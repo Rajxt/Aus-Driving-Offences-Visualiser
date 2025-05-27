@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .attr("y", 25)
     .attr("fill", "#60a5fa")
     .attr("font-size", "20px")
-    .text("💰");
+    .text("🧾");
 
   // KPI Trend indicator (optional decorative element)
   const kpiTrend = kpiCard.append("text")
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .style("opacity", 1);
 
     // Update icon based on type
-    const iconEmoji = currentKey === "FINES" ? "💰" : "⚖️";
+    const iconEmoji = currentKey === "FINES" ? "🧾" : "⚖️";
     kpiIcon.transition()
       .duration(300)
       .style("opacity", 0)
