@@ -50,10 +50,21 @@ document.addEventListener('DOMContentLoaded', function () {
     renderChart(currentKeys);
 
     // Toggle checkbox listener for FINES/CHARGES
-    document.getElementById("toggleCharges").addEventListener("change", function () {
-      currentKeys = this.checked ? ["CHARGES"] : ["FINES"];
+    const toggleCheckbox = document.getElementById("toggleCharges");
+    const toggleLabel = document.querySelector(".toggle-label");
+    
+    toggleCheckbox.addEventListener("change", function () {
+      if (this.checked) {
+        currentKeys = ["CHARGES"];
+        toggleLabel.textContent = "Show Fines Chart";
+      } else {
+        currentKeys = ["FINES"];
+        toggleLabel.textContent = "Show Charges Chart";
+      }
+    
       applySortingAndRender();
-    });
+    });    
+    
 
     // Sort dropdown listener for ascending/descending/no sort
     document.getElementById("sortOrder").addEventListener("change", function () {
