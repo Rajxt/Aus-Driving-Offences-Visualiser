@@ -11,25 +11,28 @@ document.addEventListener('DOMContentLoaded', function () {
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
   // Tooltip setup
-  const tooltipGroup = svg.append("foreignObject")
-    .attr("width", 200)
-    .attr("height", 60)
+  const tooltipGroup = svg.append("g")  // Append directly to SVG for top layer
+    .style("pointer-events", "none")
     .style("display", "none");
 
-  const tooltipHTML = tooltipGroup.append("xhtml:div")
-    .style("background", "rgba(0, 0, 0, 0.8)")
-    .style("color", "white")
-    .style("padding", "8px")
-    .style("border-radius", "5px")
-    .style("font-size", "12px")
-    .style("font-family", "sans-serif")
-    .html(""); // Will update on mouseover
+  const tooltipRect = tooltipGroup.append("rect")
+    .attr("fill", "black")
+    .attr("rx", 4)
+    .attr("ry", 4)
+    .attr("opacity", 0.75);
+
+  const tooltipText = tooltipGroup.append("text")
+    .attr("fill", "white")
+    .attr("font-size", "12px")
+    .attr("x", 5)
+    .attr("y", 15);
 
   let allData = [];
-  let currentKeys = ["FINES"];
+  let currentKeys = ["FINES"]; // which key to show
   let ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
 
   d3.csv("data/age.csv").then(rawData => {
+    // Aggregate data by AGE_GROUP
     const dataMap = d3.rollup(
       rawData,
       v => ({
@@ -41,15 +44,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     allData = Array.from(dataMap, ([ageGroup, values]) => ({ ageGroup, ...values }));
 
+    // Initial sort by ageOrder
     allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
 
     renderChart(currentKeys);
 
+    // Toggle checkbox listener for FINES/CHARGES
     document.getElementById("toggleCharges").addEventListener("change", function () {
       currentKeys = this.checked ? ["CHARGES"] : ["FINES"];
       applySortingAndRender();
     });
 
+    // Sort dropdown listener for ascending/descending/no sort
     document.getElementById("sortOrder").addEventListener("change", function () {
       applySortingAndRender();
     });
@@ -62,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
       } else if (sortOrder === "desc") {
         allData.sort((a, b) => b[currentKeys[0]] - a[currentKeys[0]]);
       } else {
+        // no sort, keep age order
         allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
       }
 
@@ -149,31 +156,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     barsEnter.merge(bars)
       .on("mouseover", function (event, d) {
+        // Bring hovered bar to front
         this.parentNode.appendChild(this);
+        // Bring tooltipGroup to top of SVG
         svg.node().appendChild(tooltipGroup.node());
 
-        const logoUrl = "media/fine.png"; // ← replace with your logo
-
         tooltipGroup.style("display", null);
-        tooltipHTML.html(`
-          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-            <img src="${logoUrl}" alt="Logo" style="width: 18px; height: 18px;">
-            <strong>${d.key}</strong>
-          </div>
-          <div>Age Group: ${d.ageGroup}<br>Value: ${d.value}</div>
-        `);
+        tooltipText.text(`${d.key}: ${d.value}`);
 
-        const mouseX = event.pageX;
-        const mouseY = event.pageY;
-        const svgRect = svg.node().getBoundingClientRect();
+        const textBBox = tooltipText.node().getBBox();
+        tooltipRect
+          .attr("width", textBBox.width + 10)
+          .attr("height", textBBox.height + 6);
 
-        const tooltipX = mouseX - svgRect.left + 10;
-        const tooltipY = mouseY - svgRect.top - 40;
+        const barX = +d3.select(this).attr("x");
+        const barY = +d3.select(this).attr("y");
 
-        tooltipGroup
-          .attr("x", tooltipX)
-          .attr("y", tooltipY);
+        // Position tooltip above the bar, centered horizontally
+        const tooltipX = margin.left + x0(d.ageGroup) + barX + x1.bandwidth() / 2 - (textBBox.width + 10) / 2;
+        const tooltipY = margin.top + barY - textBBox.height - 12;
 
+        tooltipGroup.attr("transform", `translate(${tooltipX},${tooltipY})`);
+
+        // Highlight bar color (brighter)
         d3.select(this)
           .transition()
           .duration(200)
@@ -181,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .on("mouseout", function () {
         tooltipGroup.style("display", "none");
-
+        // Reset bar color to original
         d3.select(this)
           .transition()
           .duration(200)
