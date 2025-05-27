@@ -10,29 +10,91 @@ document.addEventListener('DOMContentLoaded', function () {
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // Tooltip setup
-  const tooltipGroup = svg.append("g")  // Append directly to SVG for top layer
+  // Enhanced tooltip setup with modern design
+  const tooltipGroup = svg.append("g")
     .style("pointer-events", "none")
-    .style("display", "none");
+    .style("opacity", 0)
+    .style("filter", "drop-shadow(0 8px 25px rgba(0,0,0,0.15))");
 
+  // Gradient definitions for modern look
+  const defs = svg.append("defs");
+  
+  const gradient = defs.append("linearGradient")
+    .attr("id", "tooltipGradient")
+    .attr("x1", "0%")
+    .attr("y1", "0%")
+    .attr("x2", "0%")
+    .attr("y2", "100%");
+  
+  gradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "rgba(45, 55, 72, 0.98)")
+    .attr("stop-opacity", 1);
+  
+  gradient.append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "rgba(26, 32, 44, 0.98)")
+    .attr("stop-opacity", 1);
+
+  // Main tooltip background with modern styling
   const tooltipRect = tooltipGroup.append("rect")
-    .attr("fill", "black")
-    .attr("rx", 4)
-    .attr("ry", 4)
-    .attr("opacity", 0.75);
+    .attr("fill", "url(#tooltipGradient)")
+    .attr("rx", 12)
+    .attr("ry", 12)
+    .attr("stroke", "rgba(255, 255, 255, 0.1)")
+    .attr("stroke-width", 1);
 
-  const tooltipText = tooltipGroup.append("text")
+  // Subtle inner glow effect
+  const innerGlow = tooltipGroup.append("rect")
+    .attr("fill", "none")
+    .attr("stroke", "rgba(255, 255, 255, 0.05)")
+    .attr("stroke-width", 1)
+    .attr("rx", 11)
+    .attr("ry", 11)
+    .attr("x", 1)
+    .attr("y", 1);
+
+  // Category label (FINES/CHARGES)
+  const categoryLabel = tooltipGroup.append("text")
+    .attr("fill", "rgba(255, 255, 255, 0.7)")
+    .attr("font-size", "11px")
+    .attr("font-weight", "500")
+    .attr("x", 16)
+    .attr("y", 18)
+    .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif")
+    .style("letter-spacing", "0.5px")
+    .style("text-transform", "uppercase");
+
+  // Main value text with larger, bold styling
+  const valueText = tooltipGroup.append("text")
     .attr("fill", "white")
+    .attr("font-size", "18px")
+    .attr("font-weight", "700")
+    .attr("x", 16)
+    .attr("y", 40)
+    .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif");
+
+  // Age group context text
+  const contextText = tooltipGroup.append("text")
+    .attr("fill", "rgba(255, 255, 255, 0.6)")
     .attr("font-size", "12px")
-    .attr("x", 5)
-    .attr("y", 15);
+    .attr("font-weight", "400")
+    .attr("x", 34)
+    .attr("y", 62)
+    .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif");
+
+  // Age group icon
+  const ageIcon = tooltipGroup.append("text")
+    .attr("font-size", "14px")
+    .attr("x", 16)
+    .attr("y", 62)
+    .text("👥");
 
   let allData = [];
-  let currentKeys = ["FINES"]; // which key to show
+  let currentKeys = ["FINES"];
   let ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
 
   d3.csv("data/age.csv").then(rawData => {
-    // Aggregate data by AGE_GROUP
     const dataMap = d3.rollup(
       rawData,
       v => ({
@@ -43,19 +105,15 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 
     allData = Array.from(dataMap, ([ageGroup, values]) => ({ ageGroup, ...values }));
-
-    // Initial sort by ageOrder
     allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
 
     renderChart(currentKeys);
 
-    // Toggle checkbox listener for FINES/CHARGES
     document.getElementById("toggleCharges").addEventListener("change", function () {
       currentKeys = this.checked ? ["CHARGES"] : ["FINES"];
       applySortingAndRender();
     });
 
-    // Sort dropdown listener for ascending/descending/no sort
     document.getElementById("sortOrder").addEventListener("change", function () {
       applySortingAndRender();
     });
@@ -68,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function () {
       } else if (sortOrder === "desc") {
         allData.sort((a, b) => b[currentKeys[0]] - a[currentKeys[0]]);
       } else {
-        // no sort, keep age order
         allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
       }
 
@@ -156,41 +213,107 @@ document.addEventListener('DOMContentLoaded', function () {
 
     barsEnter.merge(bars)
       .on("mouseover", function (event, d) {
-        // Bring hovered bar to front
+        // Bring elements to front
         this.parentNode.appendChild(this);
-        // Bring tooltipGroup to top of SVG
         svg.node().appendChild(tooltipGroup.node());
 
-        tooltipGroup.style("display", null);
-        tooltipText.text(`${d.key}: ${d.value}`);
+        // Format number with commas
+        const formattedValue = d.value.toLocaleString();
+        
+        // Update tooltip content with enhanced styling
+        categoryLabel.text(d.key);
+        valueText.text(formattedValue);
+        contextText.text(d.ageGroup);
 
-        const textBBox = tooltipText.node().getBBox();
+        // Calculate dynamic tooltip size based on content
+        const categoryBBox = categoryLabel.node().getBBox();
+        const valueBBox = valueText.node().getBBox();
+        const contextBBox = contextText.node().getBBox();
+        
+        const maxWidth = Math.max(categoryBBox.width, valueBBox.width, contextBBox.width);
+        const tooltipWidth = maxWidth + 48;
+        const tooltipHeight = 90;
+
+        // Update tooltip background sizes
         tooltipRect
-          .attr("width", textBBox.width + 10)
-          .attr("height", textBBox.height + 6);
+          .attr("width", tooltipWidth)
+          .attr("height", tooltipHeight);
+        
+        innerGlow
+          .attr("width", tooltipWidth - 2)
+          .attr("height", tooltipHeight - 2);
 
-        const barX = +d3.select(this).attr("x");
-        const barY = +d3.select(this).attr("y");
+        // Update accent line width
+        // (removed accent line)
 
-        // Position tooltip above the bar, centered horizontally
-        const tooltipX = margin.left + x0(d.ageGroup) + barX + x1.bandwidth() / 2 - (textBBox.width + 10) / 2;
-        const tooltipY = margin.top + barY - textBBox.height - 12;
+        // Position tooltip to avoid blocking chart content
+        const barCenterX = margin.left + x0(d.ageGroup) + x1(d.key) + x1.bandwidth() / 2;
+        const barTopY = margin.top + y(d.value);
+        
+        let tooltipX = barCenterX - tooltipWidth / 2;
+        let tooltipY = barTopY - tooltipHeight - 20;
 
-        tooltipGroup.attr("transform", `translate(${tooltipX},${tooltipY})`);
+        // Keep tooltip within horizontal bounds
+        if (tooltipX < 10) tooltipX = 10;
+        if (tooltipX + tooltipWidth > width + margin.left + margin.right - 10) {
+          tooltipX = width + margin.left + margin.right - tooltipWidth - 10;
+        }
+        
+        // Smart vertical positioning to avoid blocking chart
+        if (tooltipY < 10) {
+          // If not enough space above, try positioning to the side
+          const leftSpace = barCenterX - tooltipWidth - 20;
+          const rightSpace = (width + margin.left + margin.right) - barCenterX - x1.bandwidth() - 20;
+          
+          if (leftSpace > 0) {
+            // Position to the left of the bar
+            tooltipX = barCenterX - tooltipWidth - 20;
+            tooltipY = barTopY - tooltipHeight / 2;
+          } else if (rightSpace > tooltipWidth) {
+            // Position to the right of the bar
+            tooltipX = barCenterX + x1.bandwidth() + 20;
+            tooltipY = barTopY - tooltipHeight / 2;
+          } else {
+            // Last resort: position above with minimal spacing
+            tooltipY = 15;
+          }
+        }
 
-        // Highlight bar color (brighter)
+        // Enhanced animation with scale and opacity
+        tooltipGroup
+          .attr("transform", `translate(${tooltipX},${tooltipY}) scale(0.8)`)
+          .style("opacity", 0)
+          .transition()
+          .duration(200)
+          .ease(d3.easeCubicOut)
+          .attr("transform", `translate(${tooltipX},${tooltipY}) scale(1)`)
+          .style("opacity", 1);
+
+        // Enhanced bar highlight with glow effect
         d3.select(this)
           .transition()
           .duration(200)
-          .attr("fill", d3.color(color(d.key)).brighter(1));
+          .attr("fill", d3.color(color(d.key)).brighter(0.3))
+          .style("filter", "drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))");
       })
       .on("mouseout", function () {
-        tooltipGroup.style("display", "none");
-        // Reset bar color to original
+        // Smooth tooltip exit animation
+        tooltipGroup
+          .transition()
+          .duration(150)
+          .ease(d3.easeCubicIn)
+          .attr("transform", function() {
+            const currentTransform = d3.select(this).attr("transform");
+            return currentTransform.replace("scale(1)", "scale(0.9)");
+          })
+          .style("opacity", 0);
+
+        // Reset bar styling
         d3.select(this)
           .transition()
           .duration(200)
-          .attr("fill", d => color(d.key));
+          .attr("fill", d => color(d.key))
+          .style("filter", "none");
       })
       .transition()
       .duration(duration)
