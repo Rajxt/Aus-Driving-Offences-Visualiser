@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const margin = { top: 60, right: 30, bottom: 70, left: 85 },
+  const margin = { top: 40, right: 30, bottom: 70, left: 75 },
     width = 680 - margin.left - margin.right,
     height = 380 - margin.top - margin.bottom;
 
@@ -7,45 +7,23 @@ document.addEventListener('DOMContentLoaded', function () {
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom);
 
-  // Chart group
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // Chart title
-  svg.append("text")
-    .attr("x", (width + margin.left + margin.right) / 2)
-    .attr("y", 30)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "16px")
-    .attr("font-weight", "bold")
-    .text("Fines and Charges by Age Group (2023)");
-
-  // Y-axis label
-  svg.append("text")
-    .attr("transform", `rotate(-90)`)
-    .attr("y", 15)
-    .attr("x", -height / 2 - margin.top)
-    .attr("dy", "-2em")
-    .attr("text-anchor", "middle")
-    .attr("font-size", "12px")
-    .text("Count");
-
   // Tooltip setup
-  const tooltipGroup = svg.append("g")
-    .style("pointer-events", "none")
+  const tooltipGroup = svg.append("foreignObject")
+    .attr("width", 200)
+    .attr("height", 60)
     .style("display", "none");
 
-  const tooltipRect = tooltipGroup.append("rect")
-    .attr("fill", "black")
-    .attr("rx", 4)
-    .attr("ry", 4)
-    .attr("opacity", 0.75);
-
-  const tooltipText = tooltipGroup.append("text")
-    .attr("fill", "white")
-    .attr("font-size", "12px")
-    .attr("x", 5)
-    .attr("y", 15);
+  const tooltipHTML = tooltipGroup.append("xhtml:div")
+    .style("background", "rgba(0, 0, 0, 0.8)")
+    .style("color", "white")
+    .style("padding", "8px")
+    .style("border-radius", "5px")
+    .style("font-size", "12px")
+    .style("font-family", "sans-serif")
+    .html(""); // Will update on mouseover
 
   let allData = [];
   let currentKeys = ["FINES"];
@@ -62,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 
     allData = Array.from(dataMap, ([ageGroup, values]) => ({ ageGroup, ...values }));
+
     allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
 
     renderChart(currentKeys);
@@ -173,21 +152,27 @@ document.addEventListener('DOMContentLoaded', function () {
         this.parentNode.appendChild(this);
         svg.node().appendChild(tooltipGroup.node());
 
+        const logoUrl = "media/fine.png"; // ← replace with your logo
+
         tooltipGroup.style("display", null);
-        tooltipText.text(`Age: ${d.ageGroup} | ${d.key}: ${d.value} (2023)`);
+        tooltipHTML.html(`
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+            <img src="${logoUrl}" alt="Logo" style="width: 18px; height: 18px;">
+            <strong>${d.key}</strong>
+          </div>
+          <div>Age Group: ${d.ageGroup}<br>Value: ${d.value}</div>
+        `);
 
-        const textBBox = tooltipText.node().getBBox();
-        tooltipRect
-          .attr("width", textBBox.width + 10)
-          .attr("height", textBBox.height + 6);
+        const mouseX = event.pageX;
+        const mouseY = event.pageY;
+        const svgRect = svg.node().getBoundingClientRect();
 
-        const barX = +d3.select(this).attr("x");
-        const barY = +d3.select(this).attr("y");
+        const tooltipX = mouseX - svgRect.left + 10;
+        const tooltipY = mouseY - svgRect.top - 40;
 
-        const tooltipX = margin.left + x0(d.ageGroup) + barX + x1.bandwidth() / 2 - (textBBox.width + 10) / 2;
-        const tooltipY = margin.top + barY - textBBox.height - 12;
-
-        tooltipGroup.attr("transform", `translate(${tooltipX},${tooltipY})`);
+        tooltipGroup
+          .attr("x", tooltipX)
+          .attr("y", tooltipY);
 
         d3.select(this)
           .transition()
@@ -196,6 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .on("mouseout", function () {
         tooltipGroup.style("display", "none");
+
         d3.select(this)
           .transition()
           .duration(200)
