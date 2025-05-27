@@ -47,24 +47,24 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initial sort by ageOrder
     allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
 
+    // Set initial toggle label text based on default key
+    updateToggleLabel(currentKeys[0]);
+
     renderChart(currentKeys);
 
     // Toggle checkbox listener for FINES/CHARGES
     const toggleCheckbox = document.getElementById("toggleCharges");
     const toggleLabel = document.querySelector(".toggle-label");
-    
+
     toggleCheckbox.addEventListener("change", function () {
       if (this.checked) {
         currentKeys = ["CHARGES"];
-        toggleLabel.textContent = "Show Fines Chart";
       } else {
         currentKeys = ["FINES"];
-        toggleLabel.textContent = "Show Charges Chart";
       }
-    
+      updateToggleLabel(currentKeys[0]);
       applySortingAndRender();
-    });    
-    
+    });
 
     // Sort dropdown listener for ascending/descending/no sort
     document.getElementById("sortOrder").addEventListener("change", function () {
@@ -84,6 +84,14 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       renderChart(currentKeys);
+    }
+
+    function updateToggleLabel(currentKey) {
+      if (currentKey === "FINES") {
+        toggleLabel.textContent = "Show Charges Chart";
+      } else {
+        toggleLabel.textContent = "Show Fines Chart";
+      }
     }
   });
 
@@ -169,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .on("mouseover", function (event, d) {
         // Bring hovered bar to front
         this.parentNode.appendChild(this);
-        // Bring tooltipGroup to top of SVG
+        // Bring tooltipGroup to top of SVG for visibility
         svg.node().appendChild(tooltipGroup.node());
 
         tooltipGroup.style("display", null);
