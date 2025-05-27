@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', function () {
     .attr("fill", "rgba(255, 255, 255, 0.7)")
     .attr("font-size", "11px")
     .attr("font-weight", "500")
-    .attr("x", 16)
-    .attr("y", 18)
+    .attr("x", 20) // Increased from 16 to 20
+    .attr("y", 22) // Increased from 18 to 22
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif")
     .style("letter-spacing", "0.5px")
     .style("text-transform", "uppercase");
@@ -70,8 +70,8 @@ document.addEventListener('DOMContentLoaded', function () {
     .attr("fill", "white")
     .attr("font-size", "18px")
     .attr("font-weight", "700")
-    .attr("x", 16)
-    .attr("y", 40)
+    .attr("x", 20) // Increased from 16 to 20
+    .attr("y", 46) // Increased from 40 to 46
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif");
 
   // Age group context text
@@ -79,15 +79,15 @@ document.addEventListener('DOMContentLoaded', function () {
     .attr("fill", "rgba(255, 255, 255, 0.6)")
     .attr("font-size", "12px")
     .attr("font-weight", "400")
-    .attr("x", 34)
-    .attr("y", 62)
+    .attr("x", 38) // Increased from 34 to 38
+    .attr("y", 68) // Increased from 62 to 68
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif");
 
   // Age group icon
   const ageIcon = tooltipGroup.append("text")
     .attr("font-size", "14px")
-    .attr("x", 16)
-    .attr("y", 62)
+    .attr("x", 20) // Increased from 16 to 20
+    .attr("y", 68) // Increased from 62 to 68
     .text("👥");
 
   let allData = [];
@@ -231,8 +231,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const contextBBox = contextText.node().getBBox();
         
         const maxWidth = Math.max(categoryBBox.width, valueBBox.width, contextBBox.width);
-        const tooltipWidth = maxWidth + 48;
-        const tooltipHeight = 90;
+        const tooltipWidth = maxWidth + 48; // Increased padding from 32 to 48
+        const tooltipHeight = 90; // Increased height from 80 to 90
 
         // Update tooltip background sizes
         tooltipRect
@@ -246,12 +246,12 @@ document.addEventListener('DOMContentLoaded', function () {
         // Update accent line width
         // (removed accent line)
 
-        // Position tooltip to avoid blocking chart content
+        // Position tooltip always above the bar
         const barCenterX = margin.left + x0(d.ageGroup) + x1(d.key) + x1.bandwidth() / 2;
         const barTopY = margin.top + y(d.value);
         
         let tooltipX = barCenterX - tooltipWidth / 2;
-        let tooltipY = barTopY - tooltipHeight - 20;
+        let tooltipY = barTopY - tooltipHeight - 15;
 
         // Keep tooltip within horizontal bounds
         if (tooltipX < 10) tooltipX = 10;
@@ -259,25 +259,8 @@ document.addEventListener('DOMContentLoaded', function () {
           tooltipX = width + margin.left + margin.right - tooltipWidth - 10;
         }
         
-        // Smart vertical positioning to avoid blocking chart
-        if (tooltipY < 10) {
-          // If not enough space above, try positioning to the side
-          const leftSpace = barCenterX - tooltipWidth - 20;
-          const rightSpace = (width + margin.left + margin.right) - barCenterX - x1.bandwidth() - 20;
-          
-          if (leftSpace > 0) {
-            // Position to the left of the bar
-            tooltipX = barCenterX - tooltipWidth - 20;
-            tooltipY = barTopY - tooltipHeight / 2;
-          } else if (rightSpace > tooltipWidth) {
-            // Position to the right of the bar
-            tooltipX = barCenterX + x1.bandwidth() + 20;
-            tooltipY = barTopY - tooltipHeight / 2;
-          } else {
-            // Last resort: position above with minimal spacing
-            tooltipY = 15;
-          }
-        }
+        // If tooltip would go above chart area, keep it above but closer to bar
+        if (tooltipY < 10) tooltipY = 10;
 
         // Enhanced animation with scale and opacity
         tooltipGroup
