@@ -512,6 +512,32 @@
     color: #333;
   }
 
+  #sortOrder {
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 2px solid #2196F3; /* Blue border */
+    border-radius: 8px;
+    background-color: #f0f8ff; /* Light blue background */
+    color: #1a1a1a;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%232196F3' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  #sortOrder:hover {
+    border-color: #1976D2; /* Darker blue on hover */
+  }
+  
+  #sortOrder:focus {
+    outline: none;
+    border-color: #1565C0;
+    box-shadow: 0 0 5px rgba(21, 101, 192, 0.5); /* Blue glow on focus */
+  }
+  
   
   
   
