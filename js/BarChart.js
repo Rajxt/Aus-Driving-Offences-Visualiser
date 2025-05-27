@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const margin = { top: 40, right: 30, bottom: 70, left: 75 },
+  const margin = { top: 120, right: 30, bottom: 70, left: 75 },
     width = 680 - margin.left - margin.right,
-    height = 380 - margin.top - margin.bottom;
+    height = 480 - margin.top - margin.bottom;
 
   const svg = d3.select("#BarChart")
     .attr("width", width + margin.left + margin.right)
@@ -10,6 +10,94 @@ document.addEventListener('DOMContentLoaded', function () {
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
+  // KPI Card Setup
+  const kpiCard = svg.append("g")
+    .attr("class", "kpi-card")
+    .attr("transform", `translate(${width + margin.left - 150}, 20)`);
+
+  // KPI Card gradient
+  const kpiGradient = svg.select("defs").empty() ? svg.append("defs") : svg.select("defs");
+  
+  const kpiCardGradient = kpiGradient.append("linearGradient")
+    .attr("id", "kpiGradient")
+    .attr("x1", "0%")
+    .attr("y1", "0%")
+    .attr("x2", "100%")
+    .attr("y2", "100%");
+  
+  kpiCardGradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#1e3a8a")
+    .attr("stop-opacity", 0.9);
+  
+  kpiCardGradient.append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#1e40af")
+    .attr("stop-opacity", 0.95);
+
+  // KPI Card background
+  const kpiBackground = kpiCard.append("rect")
+    .attr("width", 170)
+    .attr("height", 80)
+    .attr("rx", 12)
+    .attr("ry", 12)
+    .attr("fill", "url(#kpiGradient)")
+    .attr("stroke", "rgba(59, 130, 246, 0.3)")
+    .attr("stroke-width", 1)
+    .style("filter", "drop-shadow(0 4px 12px rgba(30, 58, 138, 0.3))");
+
+  // KPI Card inner border
+  const kpiInnerBorder = kpiCard.append("rect")
+    .attr("width", 168)
+    .attr("height", 78)
+    .attr("x", 1)
+    .attr("y", 1)
+    .attr("rx", 11)
+    .attr("ry", 11)
+    .attr("fill", "none")
+    .attr("stroke", "rgba(147, 197, 253, 0.2)")
+    .attr("stroke-width", 1);
+
+  // KPI Label
+  const kpiLabel = kpiCard.append("text")
+    .attr("x", 15)
+    .attr("y", 22)
+    .attr("fill", "rgba(147, 197, 253, 0.9)")
+    .attr("font-size", "11px")
+    .attr("font-weight", "600")
+    .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif")
+    .style("letter-spacing", "0.5px")
+    .style("text-transform", "uppercase")
+    .text("TOTAL FINES");
+
+  // KPI Value
+  const kpiValue = kpiCard.append("text")
+    .attr("x", 15)
+    .attr("y", 45)
+    .attr("fill", "white")
+    .attr("font-size", "24px")
+    .attr("font-weight", "700")
+    .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif")
+    .text("0");
+
+  // KPI Icon
+  const kpiIcon = kpiCard.append("text")
+    .attr("x", 140)
+    .attr("y", 25)
+    .attr("fill", "#60a5fa")
+    .attr("font-size", "20px")
+    .text("💰");
+
+  // KPI Trend indicator (optional decorative element)
+  const kpiTrend = kpiCard.append("text")
+    .attr("x", 15)
+    .attr("y", 65)
+    .attr("fill", "rgba(147, 197, 253, 0.7)")
+    .attr("font-size", "10px")
+    .attr("font-weight", "500")
+    .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif")
+    .text("All age groups");
+
   // Enhanced tooltip setup with modern design
   const tooltipGroup = svg.append("g")
     .style("pointer-events", "none")
@@ -17,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .style("filter", "drop-shadow(0 8px 25px rgba(0,0,0,0.15))");
 
   // Gradient definitions for modern look
-  const defs = svg.append("defs");
+  const defs = svg.select("defs").empty() ? svg.append("defs") : svg.select("defs");
   
   const gradient = defs.append("linearGradient")
     .attr("id", "tooltipGradient")
@@ -59,8 +147,8 @@ document.addEventListener('DOMContentLoaded', function () {
     .attr("fill", "rgba(255, 255, 255, 0.7)")
     .attr("font-size", "11px")
     .attr("font-weight", "500")
-    .attr("x", 20) // Increased from 16 to 20
-    .attr("y", 22) // Increased from 18 to 22
+    .attr("x", 20)
+    .attr("y", 22)
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif")
     .style("letter-spacing", "0.5px")
     .style("text-transform", "uppercase");
@@ -70,8 +158,8 @@ document.addEventListener('DOMContentLoaded', function () {
     .attr("fill", "white")
     .attr("font-size", "18px")
     .attr("font-weight", "700")
-    .attr("x", 20) // Increased from 16 to 20
-    .attr("y", 46) // Increased from 40 to 46
+    .attr("x", 20)
+    .attr("y", 46)
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif");
 
   // Age group context text
@@ -79,20 +167,73 @@ document.addEventListener('DOMContentLoaded', function () {
     .attr("fill", "rgba(255, 255, 255, 0.6)")
     .attr("font-size", "12px")
     .attr("font-weight", "400")
-    .attr("x", 38) // Increased from 34 to 38
-    .attr("y", 68) // Increased from 62 to 68
+    .attr("x", 38)
+    .attr("y", 68)
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif");
 
   // Age group icon
   const ageIcon = tooltipGroup.append("text")
     .attr("font-size", "14px")
-    .attr("x", 20) // Increased from 16 to 20
-    .attr("y", 68) // Increased from 62 to 68
+    .attr("x", 20)
+    .attr("y", 68)
     .text("👥");
 
   let allData = [];
   let currentKeys = ["FINES"];
   let ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
+
+  // Function to update KPI card
+  function updateKpiCard(keys) {
+    const currentKey = keys[0];
+    const total = allData.reduce((sum, d) => sum + d[currentKey], 0);
+    const formattedTotal = total.toLocaleString();
+    
+    // Update label and value with animation
+    kpiLabel.transition()
+      .duration(300)
+      .style("opacity", 0)
+      .transition()
+      .duration(0)
+      .text(`TOTAL ${currentKey}`)
+      .transition()
+      .duration(300)
+      .style("opacity", 1);
+    
+    kpiValue.transition()
+      .duration(300)
+      .style("opacity", 0)
+      .transition()
+      .duration(0)
+      .text(formattedTotal)
+      .transition()
+      .duration(300)
+      .style("opacity", 1);
+
+    // Update icon based on type
+    const iconEmoji = currentKey === "FINES" ? "💰" : "⚖️";
+    kpiIcon.transition()
+      .duration(300)
+      .style("opacity", 0)
+      .transition()
+      .duration(0)
+      .text(iconEmoji)
+      .transition()
+      .duration(300)
+      .style("opacity", 1);
+
+    // Update colors based on type
+    const iconColor = currentKey === "FINES" ? "#60a5fa" : "#3b82f6";
+    kpiIcon.attr("fill", iconColor);
+    
+    // Add subtle pulse animation to the card
+    kpiBackground
+      .transition()
+      .duration(200)
+      .style("filter", "drop-shadow(0 4px 12px rgba(30, 58, 138, 0.4))")
+      .transition()
+      .duration(200)
+      .style("filter", "drop-shadow(0 4px 12px rgba(30, 58, 138, 0.3))");
+  }
 
   d3.csv("data/age.csv").then(rawData => {
     const dataMap = d3.rollup(
@@ -108,6 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
     allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
 
     renderChart(currentKeys);
+    updateKpiCard(currentKeys); // Initialize KPI card
 
     document.getElementById("toggleCharges").addEventListener("change", function () {
       currentKeys = this.checked ? ["CHARGES"] : ["FINES"];
@@ -130,6 +272,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       renderChart(currentKeys);
+      updateKpiCard(currentKeys); // Update KPI card when data changes
     }
   });
 
@@ -231,8 +374,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const contextBBox = contextText.node().getBBox();
         
         const maxWidth = Math.max(categoryBBox.width, valueBBox.width, contextBBox.width);
-        const tooltipWidth = maxWidth + 48; // Increased padding from 32 to 48
-        const tooltipHeight = 90; // Increased height from 80 to 90
+        const tooltipWidth = maxWidth + 48;
+        const tooltipHeight = 90;
 
         // Update tooltip background sizes
         tooltipRect
@@ -242,9 +385,6 @@ document.addEventListener('DOMContentLoaded', function () {
         innerGlow
           .attr("width", tooltipWidth - 2)
           .attr("height", tooltipHeight - 2);
-
-        // Update accent line width
-        // (removed accent line)
 
         // Position tooltip always above the bar
         const barCenterX = margin.left + x0(d.ageGroup) + x1(d.key) + x1.bandwidth() / 2;
