@@ -10,12 +10,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // KPI Card Setup
+  
   const kpiCard = svg.append("g")
     .attr("class", "kpi-card")
     .attr("transform", `translate(${width + margin.left - 150}, 20)`);
 
-  // KPI Card gradient
+  
   const kpiGradient = svg.select("defs").empty() ? svg.append("defs") : svg.select("defs");
   
   const kpiCardGradient = kpiGradient.append("linearGradient")
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .duration(300)
       .style("opacity", 1);
 
-    // Update icon based on type
+   
     const iconEmoji = currentKey === "FINES" ? "🧾" : "⚖️";
     kpiIcon.transition()
       .duration(300)
