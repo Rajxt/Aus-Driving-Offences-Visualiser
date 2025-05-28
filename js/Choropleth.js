@@ -1,8 +1,8 @@
 import { loadChoropleth } from './LoadData.js';
 
 document.addEventListener('DOMContentLoaded', function () {
-    const width = 800;
-    const height = 800;
+    const width = 500;
+    const height = 500;
     const svg = d3.select("#choropleth")
         .attr("width", width)
         .attr("height", height);
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const projection = d3.geoMercator()
         .center([134, -28])
-        .scale(800)
+        .scale(500)
         .translate([width / 2, height / 2]);
 
     const path = d3.geoPath().projection(projection);

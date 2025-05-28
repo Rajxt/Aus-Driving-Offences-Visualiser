@@ -1,8 +1,8 @@
 import { loadChoropleth } from './LoadData.js';
 
 document.addEventListener('DOMContentLoaded', function () {
-    const width = 800;
-    const height = 520;
+    const width = 560;
+    const height = 450;
     const margin = { top: 50, right: 30, bottom: 50, left: 60 };
 
     const svg = d3.select("#line")
@@ -94,6 +94,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 .transition()
                 .duration(1500)
                 .attr("stroke-dashoffset", 0);
+
+
+            chartGroup.append("text")
+                .attr("class", "x axis-label")
+                .attr("text-anchor", "middle")
+                .attr("x", (width - margin.left - margin.right) / 2)
+                .attr("y", height - margin.top - 10) // 10px above bottom margin
+                .text("Years");
+
+            // Y Axis Label
+            chartGroup.append("text")
+                .attr("class", "y axis-label")
+                .attr("text-anchor", "middle")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -(height - margin.top - margin.bottom) / 2)
+                .attr("y", -margin.left + 13) 
+                .text("Fines");
+
 
             const circles = circleGroup.selectAll("circle")
                 .data(data)
