@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="stylesheet" href="css/age.css">
   </head>
   <body>
     <header>
@@ -17,5 +18,34 @@
         </ul>
       </nav>
     </header>
+
+    <section id="age-group" class="section-content">
+      <div class="container">
+          <h2>Age Group</h2>
+          <p>Analyse Age group of offenders</p>
+      </div>
+      <div class="demo">
+          <label class="switch">
+              <input type="checkbox" id="toggleCharges">
+              <span class="slider"></span>
+              <span class="toggle-label">Show Charges Instead</span>
+            </label>
+            <label for="sortOrder">Sort bars by value:</label>
+              <select id="sortOrder">
+              <option value="none">No Sort</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+              </select>
+          <div class="national-charts">
+              <svg id="BarChart"></svg>
+
+          </div>                    
+      </div>
+  </section>
+    <script type="module" src="js/BarChart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <script src="js/LoadData.js"></script>
+    <script src="js/scrollspy.js"></script>
   </body>
 </html>
