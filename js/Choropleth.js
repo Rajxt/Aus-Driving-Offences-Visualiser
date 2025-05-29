@@ -98,7 +98,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const legendContainer = d3.select("#legend");
         legendContainer.html(""); 
     
-        legendContainer.append("h4").text(`Fines by State - ${year}`);
+        legendContainer.append("h4")
+            .text(`Fines by State - ${year}`)
+            .style("font-size", "20px");
     
         const entries = Array.from(valueByState.entries())
             .sort((a, b) => d3.descending(a[1], b[1]));
@@ -108,12 +110,14 @@ document.addEventListener('DOMContentLoaded', function () {
             .data(entries)
             .join("div")
             .attr("class", "legend-item")
-            .style("margin-bottom", "6px");
+            .style("margin-bottom", "6px")
+            .style("font-size", "14px");
     
         legendItems.append("span")
             .style("display", "inline-block")
             .style("width", "16px")
             .style("height", "16px")
+
             .style("margin-right", "6px")
             .style("vertical-align", "middle")
             .style("background-color", d => stateColors[d[0]] || '#90a4ae')
