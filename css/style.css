@@ -98,17 +98,21 @@ nav {
   display: block;
 }
 
-/* Hero Section */
+
+
 .hero {
   height: 100vh;
   min-height: 500px;
-  background: linear-gradient(135deg, var(--dark-blue), var(--secondary-blue));
+  background: linear-gradient(-45deg, #012663, #6faeff, #002662, #79acff);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 0 ;
+  padding: 0;
 }
+
 
 .hero .content {
   max-width: 800px;
@@ -258,5 +262,16 @@ footer {
   
   .hero .explore {
     padding: 12px 30px;
+  }
+}
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
