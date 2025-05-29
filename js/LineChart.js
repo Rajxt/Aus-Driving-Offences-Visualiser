@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const height = 450;
     const margin = { top: 70, right: 30, bottom: 50, left: 60 };
 
-
     const svg = d3.select("#line")
         .attr("width", width)
         .attr("height", height);
@@ -101,14 +100,13 @@ document.addEventListener('DOMContentLoaded', function () {
             .attr("y", height - margin.top - 10)
             .text("Years");
 
+        
         chartGroup.append("text")
             .attr("class", "y axis-label")
             .attr("text-anchor", "middle")
-            .attr("transform", "rotate(-90)")
-            .attr("x", -(innerHeight / 2))
-            .attr("y", -50) 
+            .attr("x", -20)
+            .attr("y", -35)  
             .text("Fines");
-        
 
         const circles = circleGroup.selectAll("circle")
             .data(data)
