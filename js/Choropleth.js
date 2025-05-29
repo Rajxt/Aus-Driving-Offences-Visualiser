@@ -68,6 +68,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     .style("filter", "drop-shadow(0px 2px 4px rgba(0,0,0,0.8))")
                     .style("transform","scale(1.01)");
             })
+            .on("click", function(event, d) {
+                const state = d.properties.STATE_NAME;
+                if (typeof window.updateLineChartFromMap === 'function') {
+                    window.updateLineChartFromMap(state);  
+                    document.getElementById("state").value = state; 
+
+                    svg.selectAll(".state")
+                        .attr("stroke", "#ffffff")
+                        .attr("stroke-width", 1.1);
+
+                    d3.select(this)
+                        .attr("stroke", "#000")
+                        .attr("stroke-width", 1);
+                }
+            })
+         
             .on("mouseout", function(event, d) {
                 d3.select(this)
                     .attr("stroke", "#ffffff")

@@ -1,9 +1,10 @@
 import { loadChoropleth } from './LoadData.js';
 
 document.addEventListener('DOMContentLoaded', function () {
-    const width = 560;
+    const width = 590;
     const height = 450;
-    const margin = { top: 50, right: 30, bottom: 50, left: 60 };
+    const margin = { top: 70, right: 30, bottom: 50, left: 60 };
+
 
     const svg = d3.select("#line")
         .attr("width", width)
@@ -11,6 +12,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const chartGroup = svg.append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    let csvDataGlobal = [];
 
     let tooltip = d3.select(".line-chart-tooltip");
     if (tooltip.empty()) {
@@ -29,141 +32,148 @@ document.addEventListener('DOMContentLoaded', function () {
             .style("border", "1px solid rgba(255,255,255,0.2)");
     }
 
-    loadChoropleth().then(([geoData, csvData]) => {
+    const xScale = d3.scaleLinear();
+    const yScale = d3.scaleLinear();
+
+    const xAxisGroup = chartGroup.append("g");
+    const yAxisGroup = chartGroup.append("g");
+
+    const linePathGroup = chartGroup.append("g");
+    const circleGroup = chartGroup.append("g");
+
+    const stateSelect = document.getElementById("state");
+
+    function updateChart(selectedState) {
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
 
-        const xScale = d3.scaleLinear().range([0, innerWidth]);
-        const yScale = d3.scaleLinear().range([innerHeight, 0]);
+        xScale.range([0, innerWidth]);
+        yScale.range([innerHeight, 0]);
 
-        const xAxisGroup = chartGroup.append("g")
-            .attr("transform", `translate(0,${innerHeight})`);
-        const yAxisGroup = chartGroup.append("g");
+        linePathGroup.selectAll("*").remove();
+        circleGroup.selectAll("*").remove();
+        chartGroup.selectAll(".x.axis-label").remove();
+        chartGroup.selectAll(".y.axis-label").remove();
 
-       
+        const filtered = csvDataGlobal.filter(d => d.STATE_NAME === selectedState);
+        const grouped = d3.rollup(
+            filtered,
+            v => d3.sum(v, d => +d.FINES),
+            d => +d.YEAR
+        );
 
-        const linePathGroup = chartGroup.append("g");
-        const circleGroup = chartGroup.append("g");
+        const data = Array.from(grouped, ([year, total]) => ({ year, total }))
+            .sort((a, b) => a.year - b.year);
 
-        const stateSelect = document.getElementById("state");
+        xScale.domain(d3.extent(data, d => d.year));
+        yScale.domain([0, d3.max(data, d => d.total)]).nice();
+
+        xAxisGroup
+            .attr("transform", `translate(0,${innerHeight})`)
+            .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+
+        yAxisGroup.call(d3.axisLeft(yScale));
+
+        const line = d3.line()
+            .x(d => xScale(d.year))
+            .y(d => yScale(d.total))
+            .curve(d3.curveMonotoneX);
+
+        const path = linePathGroup.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 3)
+            .attr("d", line);
+
+        const totalLength = path.node().getTotalLength();
+        path
+            .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
+            .attr("stroke-dashoffset", totalLength)
+            .transition()
+            .duration(1500)
+            .attr("stroke-dashoffset", 0);
+
+        chartGroup.append("text")
+            .attr("class", "x axis-label")
+            .attr("text-anchor", "middle")
+            .attr("x", innerWidth / 2)
+            .attr("y", height - margin.top - 10)
+            .text("Years");
+
+        chartGroup.append("text")
+            .attr("class", "y axis-label")
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .attr("x", -(innerHeight / 2))
+            .attr("y", -50) 
+            .text("Fines");
+        
+
+        const circles = circleGroup.selectAll("circle")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", d => xScale(d.year))
+            .attr("cy", d => yScale(d.total))
+            .attr("r", 0)
+            .attr("fill", "steelblue")
+            .attr("stroke", "white")
+            .attr("stroke-width", 2)
+            .style("cursor", "pointer")
+            .style("opacity", 0);
+
+        circles.transition()
+            .delay((d, i) => i * 100)
+            .duration(500)
+            .attr("r", 5)
+            .style("opacity", 1);
+
+        circles
+            .on("mouseover", function (event, d) {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("r", 8)
+                    .attr("fill", "#ff6b35");
+
+                tooltip
+                    .style("visibility", "visible")
+                    .html(`
+                        <div style="font-weight: bold; margin-bottom: 5px;">Year: ${d.year}</div>
+                        <div>Total FINES: ${d.total.toLocaleString()}</div>
+                    `)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 10) + "px");
+            })
+            .on("mousemove", function (event) {
+                tooltip
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 10) + "px");
+            })
+            .on("mouseout", function () {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("r", 5)
+                    .attr("fill", "steelblue");
+
+                tooltip.style("visibility", "hidden");
+            });
+    }
+
+    window.updateLineChartFromMap = updateChart;
+
+    loadChoropleth().then(([geoData, csvData]) => {
+        csvDataGlobal = csvData;
+
         const states = Array.from(new Set(csvData.map(d => d.STATE_NAME))).sort();
-
         states.forEach(state => {
             const option = document.createElement("option");
             option.value = state;
             option.textContent = state;
             stateSelect.appendChild(option);
         });
-
-        function updateChart(selectedState) {
-            linePathGroup.selectAll("*").remove();
-            circleGroup.selectAll("*").remove();
-
-            const filtered = csvData.filter(d => d.STATE_NAME === selectedState);
-            const grouped = d3.rollup(
-                filtered,
-                v => d3.sum(v, d => +d.FINES),
-                d => +d.YEAR
-            );
-
-            const data = Array.from(grouped, ([year, total]) => ({ year, total }))
-                .sort((a, b) => a.year - b.year);
-
-            xScale.domain(d3.extent(data, d => d.year));
-            yScale.domain([0, d3.max(data, d => d.total)]).nice();
-
-            xAxisGroup.call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
-            yAxisGroup.call(d3.axisLeft(yScale));
-
-            const line = d3.line()
-                .x(d => xScale(d.year))
-                .y(d => yScale(d.total))
-                .curve(d3.curveMonotoneX);
-
-            const path = linePathGroup.append("path")
-                .datum(data)
-                .attr("fill", "none")
-                .attr("stroke", "steelblue")
-                .attr("stroke-width", 3)
-                .attr("d", line);
-
-            const totalLength = path.node().getTotalLength();
-            path
-                .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
-                .attr("stroke-dashoffset", totalLength)
-                .transition()
-                .duration(1500)
-                .attr("stroke-dashoffset", 0);
-
-
-            chartGroup.append("text")
-                .attr("class", "x axis-label")
-                .attr("text-anchor", "middle")
-                .attr("x", (width - margin.left - margin.right) / 2)
-                .attr("y", height - margin.top - 10) // 10px above bottom margin
-                .text("Years");
-
-            // Y Axis Label
-            chartGroup.append("text")
-                .attr("class", "y axis-label")
-                .attr("text-anchor", "middle")
-                .attr("transform", "rotate(-90)")
-                .attr("x", -(height - margin.top - margin.bottom) / 2)
-                .attr("y", -margin.left + 13) 
-                .text("Fines");
-
-
-            const circles = circleGroup.selectAll("circle")
-                .data(data)
-                .enter()
-                .append("circle")
-                .attr("cx", d => xScale(d.year))
-                .attr("cy", d => yScale(d.total))
-                .attr("r", 0)
-                .attr("fill", "steelblue")
-                .attr("stroke", "white")
-                .attr("stroke-width", 2)
-                .style("cursor", "pointer")
-                .style("opacity", 0);
-
-            circles.transition()
-                .delay((d, i) => i * 100)
-                .duration(500)
-                .attr("r", 5)
-                .style("opacity", 1);
-
-            circles
-                .on("mouseover", function (event, d) {
-                    d3.select(this)
-                        .transition()
-                        .duration(200)
-                        .attr("r", 8)
-                        .attr("fill", "#ff6b35");
-
-                    tooltip
-                        .style("visibility", "visible")
-                        .html(`
-                            <div style="font-weight: bold; margin-bottom: 5px;">Year: ${d.year}</div>
-                            <div>Total FINES: ${d.total.toLocaleString()}</div>
-                        `)
-                        .style("left", (event.pageX + 10) + "px")
-                        .style("top", (event.pageY - 10) + "px");
-                })
-                .on("mousemove", function (event) {
-                    tooltip
-                        .style("left", (event.pageX + 10) + "px")
-                        .style("top", (event.pageY - 10) + "px");
-                })
-                .on("mouseout", function () {
-                    d3.select(this)
-                        .transition()
-                        .duration(200)
-                        .attr("r", 5)
-                        .attr("fill", "steelblue");
-
-                    tooltip.style("visibility", "hidden");
-                });
-        }
 
         updateChart(states[0]);
 
