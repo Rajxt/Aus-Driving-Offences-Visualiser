@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isPlaying = true;
         const playButton = document.getElementById('playButton');
         if (playButton) {
-            playButton.textContent = '⏸ Pause';
+            playButton.textContent = '⏸ Pause Map';
             playButton.classList.add('playing');
         }
 
@@ -163,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const maxYear = parseInt(yearSlider.max);
                 const minYear = parseInt(yearSlider.min);
                 
-                // Move to next year, or loop back to start
                 currentYear = currentYear >= maxYear ? minYear : currentYear + 1;
                 
                 yearSlider.value = currentYear;
@@ -182,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isPlaying = false;
         const playButton = document.getElementById('playButton');
         if (playButton) {
-            playButton.textContent = '▶ Play';
+            playButton.textContent = '▶ Play Map';
             playButton.classList.remove('playing');
         }
         
@@ -206,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (yearSliderContainer && !document.getElementById('playButton')) {
             const playButton = document.createElement('button');
             playButton.id = 'playButton';
-            playButton.textContent = '▶ Play';
+            playButton.textContent = '▶ Play Map';
             playButton.className = 'play-button';
             playButton.style.cssText = `
                 margin-left: 15px;
