@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function () {
         .attr("height", height);
 
     let geoData, data;
+    let isPlaying = false;
+    let playInterval = null;
+    const playSpeed = 800; // milliseconds between year changes
 
     const projection = d3.geoMercator()
         .center([134, -28])
@@ -83,7 +86,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         .attr("stroke-width", 1);
                 }
             })
-         
             .on("mouseout", function(event, d) {
                 d3.select(this)
                     .attr("stroke", "#ffffff")
@@ -92,13 +94,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     .style("transform","scale(1)");
             });
 
-            updateLegend(valueByState, year);
-
-
+        updateLegend(valueByState, year);
         
         svg.selectAll("path").select("title").remove();
-
-
          
         svg.selectAll("path")
             .append("title")
@@ -133,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .style("display", "inline-block")
             .style("width", "16px")
             .style("height", "16px")
-
             .style("margin-right", "6px")
             .style("vertical-align", "middle")
             .style("background-color", d => stateColors[d[0]] || '#90a4ae')
@@ -146,10 +143,110 @@ document.addEventListener('DOMContentLoaded', function () {
         legendItems.append("span")
             .text(d => `${d[0]}: ${d[1] ? d[1].toLocaleString() : "No data"}`);
     }
+
+    function startAutoPlay() {
+        if (isPlaying) return;
+        
+        isPlaying = true;
+        const playButton = document.getElementById('playButton');
+        if (playButton) {
+            playButton.textContent = '⏸️ Pause';
+            playButton.classList.add('playing');
+        }
+
+        playInterval = setInterval(() => {
+            const yearSlider = document.getElementById('yearSlider');
+            const yearLabel = document.getElementById('yearLabel');
+            
+            if (yearSlider) {
+                let currentYear = parseInt(yearSlider.value);
+                const maxYear = parseInt(yearSlider.max);
+                const minYear = parseInt(yearSlider.min);
+                
+                // Move to next year, or loop back to start
+                currentYear = currentYear >= maxYear ? minYear : currentYear + 1;
+                
+                yearSlider.value = currentYear;
+                if (yearLabel) {
+                    yearLabel.textContent = currentYear;
+                }
+                
+                updateChoropleth('FINES', currentYear);
+            }
+        }, playSpeed);
+    }
+
+    function stopAutoPlay() {
+        if (!isPlaying) return;
+        
+        isPlaying = false;
+        const playButton = document.getElementById('playButton');
+        if (playButton) {
+            playButton.textContent = '▶️ Play';
+            playButton.classList.remove('playing');
+        }
+        
+        if (playInterval) {
+            clearInterval(playInterval);
+            playInterval = null;
+        }
+    }
+
+    function toggleAutoPlay() {
+        if (isPlaying) {
+            stopAutoPlay();
+        } else {
+            startAutoPlay();
+        }
+    }
+
+    // Create play button if it doesn't exist
+    function createPlayButton() {
+        const yearSliderContainer = document.querySelector('.year-slider-container');
+        if (yearSliderContainer && !document.getElementById('playButton')) {
+            const playButton = document.createElement('button');
+            playButton.id = 'playButton';
+            playButton.textContent = '▶️ Play';
+            playButton.className = 'play-button';
+            playButton.style.cssText = `
+                margin-left: 15px;
+                padding: 8px 16px;
+                background-color: #1976d2;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            `;
+            
+            playButton.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#1565c0';
+                this.style.transform = 'translateY(-1px)';
+            });
+            
+            playButton.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = this.classList.contains('playing') ? '#d32f2f' : '#1976d2';
+                this.style.transform = 'translateY(0)';
+            });
+            
+            playButton.addEventListener('click', toggleAutoPlay);
+            
+            // Add the button after the slider
+            const slider = document.getElementById('yearSlider');
+            if (slider) {
+                slider.parentNode.appendChild(playButton);
+            }
+        }
+    }
     
     loadChoropleth().then(([geo, d]) => {
         geoData = geo;
         data = d;
+
+        // Create the play button
+        createPlayButton();
 
         const yearSlider = document.getElementById('yearSlider');
         const yearLabel = document.getElementById('yearLabel');
@@ -161,12 +258,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 const selectedYear = +this.value;
                 yearLabel.textContent = selectedYear;
                 updateChoropleth('FINES', selectedYear);
+                
+                // Stop auto-play when user manually changes slider
+                if (isPlaying) {
+                    stopAutoPlay();
+                }
             });
             
             updateChoropleth('FINES', +yearSlider.value);
         } else {
-            
             updateChoropleth('FINES', 2023);
+        }
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (playInterval) {
+            clearInterval(playInterval);
         }
     });
 });
