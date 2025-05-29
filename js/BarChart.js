@@ -182,6 +182,33 @@ document.addEventListener('DOMContentLoaded', function () {
   let currentKeys = ["FINES"];
   let ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
 
+  // Function to update toggle button text
+  function updateToggleText(isCharges) {
+    const toggleLabel = document.querySelector('label[for="toggleCharges"]');
+    if (toggleLabel) {
+      // Find the text node or span within the label and update it
+      const textNodes = Array.from(toggleLabel.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+      if (textNodes.length > 0) {
+        textNodes[0].textContent = isCharges ?   'Showing Fines' : 'Showing Charges';
+      } else {
+        // If there's a span or other element containing the text
+        const textSpan = toggleLabel.querySelector('span, .toggle-text');
+        if (textSpan) {
+          textSpan.textContent = isCharges ? 'Showing Fines' : 'Showing Charges' ;
+        } else {
+        
+          toggleLabel.innerHTML = toggleLabel.innerHTML.replace(/Show (Fines|Charges)/, isCharges ? 'Showing Charges' : 'Showing Fines');
+        }
+      }
+    }
+    
+   
+    const toggleText = document.querySelector('.toggle-text, .toggle-label-text');
+    if (toggleText) {
+      toggleText.textContent = isCharges ?  'Show Fines' : 'Show Charges';
+    }
+  }
+
   // Function to update KPI card
   function updateKpiCard(keys) {
     const currentKey = keys[0];
@@ -250,9 +277,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     renderChart(currentKeys);
     updateKpiCard(currentKeys); // Initialize KPI card
-
+    updateToggleText(false); 
     document.getElementById("toggleCharges").addEventListener("change", function () {
-      currentKeys = this.checked ? ["CHARGES"] : ["FINES"];
+      const isCharges = this.checked;
+      currentKeys = isCharges ? ["CHARGES"] : ["FINES"];
+      updateToggleText(isCharges); // Update toggle text
       applySortingAndRender();
     });
 

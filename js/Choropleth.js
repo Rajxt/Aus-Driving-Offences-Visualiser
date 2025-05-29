@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let geoData, data;
     let isPlaying = false;
     let playInterval = null;
-    const playSpeed = 800; // milliseconds between year changes
+    const playSpeed = 700; // milliseconds between year changes
 
     const projection = d3.geoMercator()
         .center([134, -28])
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isPlaying = true;
         const playButton = document.getElementById('playButton');
         if (playButton) {
-            playButton.textContent = '⏸️ Pause';
+            playButton.textContent = '⏸ Pause';
             playButton.classList.add('playing');
         }
 
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isPlaying = false;
         const playButton = document.getElementById('playButton');
         if (playButton) {
-            playButton.textContent = '▶️ Play';
+            playButton.textContent = '▶ Play';
             playButton.classList.remove('playing');
         }
         
@@ -200,13 +200,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Create play button if it doesn't exist
+   
     function createPlayButton() {
         const yearSliderContainer = document.querySelector('.year-slider-container');
         if (yearSliderContainer && !document.getElementById('playButton')) {
             const playButton = document.createElement('button');
             playButton.id = 'playButton';
-            playButton.textContent = '▶️ Play';
+            playButton.textContent = '▶ Play';
             playButton.className = 'play-button';
             playButton.style.cssText = `
                 margin-left: 15px;
@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             playButton.addEventListener('click', toggleAutoPlay);
             
-            // Add the button after the slider
+           
             const slider = document.getElementById('yearSlider');
             if (slider) {
                 slider.parentNode.appendChild(playButton);
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
         geoData = geo;
         data = d;
 
-        // Create the play button
+       
         createPlayButton();
 
         const yearSlider = document.getElementById('yearSlider');
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 yearLabel.textContent = selectedYear;
                 updateChoropleth('FINES', selectedYear);
                 
-                // Stop auto-play when user manually changes slider
+                
                 if (isPlaying) {
                     stopAutoPlay();
                 }
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Cleanup on page unload
+   
     window.addEventListener('beforeunload', () => {
         if (playInterval) {
             clearInterval(playInterval);
