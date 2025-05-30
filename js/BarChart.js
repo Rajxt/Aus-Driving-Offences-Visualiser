@@ -1,23 +1,73 @@
 import { loadBar } from './LoadData.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
-  const margin = { top: 120, right: 30, bottom: 70, left: 75 },
-    width = 680 - margin.left - margin.right,
-    height = 480 - margin.top - margin.bottom;
+  // Responsive dimensions with breakpoints
+  function getResponsiveDimensions() {
+    const containerWidth = document.getElementById("BarChart").clientWidth || 800;
+    const screenWidth = window.innerWidth;
+    
+    let margin, width, height;
+    
+    if (screenWidth < 480) {
+      // Mobile
+      margin = { top: 100, right: 20, bottom: 80, left: 50 };
+      width = Math.max(containerWidth - margin.left - margin.right, 280);
+      height = 400 - margin.top - margin.bottom;
+    } else if (screenWidth < 768) {
+      // Tablet
+      margin = { top: 110, right: 25, bottom: 75, left: 60 };
+      width = Math.max(containerWidth - margin.left - margin.right, 400);
+      height = 440 - margin.top - margin.bottom;
+    } else {
+      // Desktop
+      margin = { top: 120, right: 30, bottom: 70, left: 75 };
+      width = Math.max(containerWidth - margin.left - margin.right, 550);
+      height = 480 - margin.top - margin.bottom;
+    }
+    
+    return { margin, width, height };
+  }
+
+  let { margin, width, height } = getResponsiveDimensions();
 
   const svg = d3.select("#BarChart")
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
+    .attr("height", height + margin.top + margin.bottom)
+    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .style("width", "100%")
+    .style("height", "auto")
+    .style("max-width", "100%");
 
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
+  // Responsive KPI card positioning and sizing
+  function getKpiCardPosition() {
+    const screenWidth = window.innerWidth;
+    if (screenWidth < 768) {
+      return {
+        x: 10,
+        y: 10,
+        width: Math.min(150, width * 0.4),
+        height: 70
+      };
+    } else {
+      return {
+        x: width + margin.left - 170,
+        y: 20,
+        width: 170,
+        height: 80
+      };
+    }
+  }
+
+  let kpiPos = getKpiCardPosition();
   
   const kpiCard = svg.append("g")
     .attr("class", "kpi-card")
-    .attr("transform", `translate(${width + margin.left - 150}, 20)`);
+    .attr("transform", `translate(${kpiPos.x}, ${kpiPos.y})`);
 
-  
   const kpiGradient = svg.select("defs").empty() ? svg.append("defs") : svg.select("defs");
   
   const kpiCardGradient = kpiGradient.append("linearGradient")
@@ -36,20 +86,20 @@ document.addEventListener('DOMContentLoaded', async function () {
     .attr("offset", "100%")
     .attr("stop-color", "#1e40af")
     .attr("stop-opacity", 0.95);
- 
+
   const kpiBackground = kpiCard.append("rect")
-    .attr("width", 170)
-    .attr("height", 80)
+    .attr("width", kpiPos.width)
+    .attr("height", kpiPos.height)
     .attr("rx", 12)
     .attr("ry", 12)
     .attr("fill", "url(#kpiGradient)")
     .attr("stroke", "rgba(59, 130, 246, 0.3)")
     .attr("stroke-width", 1)
     .style("filter", "drop-shadow(0 4px 12px rgba(30, 58, 138, 0.3))");
- 
+
   const kpiInnerBorder = kpiCard.append("rect")
-    .attr("width", 168)
-    .attr("height", 78)
+    .attr("width", kpiPos.width - 2)
+    .attr("height", kpiPos.height - 2)
     .attr("x", 1)
     .attr("y", 1)
     .attr("rx", 11)
@@ -57,50 +107,84 @@ document.addEventListener('DOMContentLoaded', async function () {
     .attr("fill", "none")
     .attr("stroke", "rgba(147, 197, 253, 0.2)")
     .attr("stroke-width", 1);
- 
+
+  // Responsive font sizes
+  function getResponsiveFontSizes() {
+    const screenWidth = window.innerWidth;
+    if (screenWidth < 480) {
+      return {
+        kpiLabel: "9px",
+        kpiValue: "18px",
+        kpiTrend: "8px",
+        tooltipCategory: "10px",
+        tooltipValue: "16px",
+        tooltipContext: "11px"
+      };
+    } else if (screenWidth < 768) {
+      return {
+        kpiLabel: "10px",
+        kpiValue: "20px",
+        kpiTrend: "9px",
+        tooltipCategory: "11px",
+        tooltipValue: "17px",
+        tooltipContext: "12px"
+      };
+    } else {
+      return {
+        kpiLabel: "11px",
+        kpiValue: "24px",
+        kpiTrend: "10px",
+        tooltipCategory: "11px",
+        tooltipValue: "18px",
+        tooltipContext: "12px"
+      };
+    }
+  }
+
+  let fontSizes = getResponsiveFontSizes();
+
   const kpiLabel = kpiCard.append("text")
     .attr("x", 15)
-    .attr("y", 22)
+    .attr("y", 18)
     .attr("fill", "rgba(147, 197, 253, 0.9)")
-    .attr("font-size", "11px")
+    .attr("font-size", fontSizes.kpiLabel)
     .attr("font-weight", "600")
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif")
     .style("letter-spacing", "0.5px")
     .style("text-transform", "uppercase")
     .text("TOTAL FINES");
- 
+
   const kpiValue = kpiCard.append("text")
     .attr("x", 15)
-    .attr("y", 45)
+    .attr("y", window.innerWidth < 768 ? 38 : 45)
     .attr("fill", "white")
-    .attr("font-size", "24px")
+    .attr("font-size", fontSizes.kpiValue)
     .attr("font-weight", "700")
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif")
     .text("0");
- 
+
   const kpiIcon = kpiCard.append("text")
-    .attr("x", 140)
-    .attr("y", 25)
+    .attr("x", kpiPos.width - 30)
+    .attr("y", 22)
     .attr("fill", "#60a5fa")
-    .attr("font-size", "20px")
+    .attr("font-size", window.innerWidth < 768 ? "16px" : "20px")
     .text("🧾");
- 
+
   const kpiTrend = kpiCard.append("text")
     .attr("x", 15)
-    .attr("y", 65)
+    .attr("y", kpiPos.height - 10)
     .attr("fill", "rgba(147, 197, 253, 0.7)")
-    .attr("font-size", "10px")
+    .attr("font-size", fontSizes.kpiTrend)
     .attr("font-weight", "500")
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif")
     .text("All age groups");
 
- 
+  // Tooltip with responsive sizing
   const tooltipGroup = svg.append("g")
     .style("pointer-events", "none")
     .style("opacity", 0)
     .style("filter", "drop-shadow(0 8px 25px rgba(0,0,0,0.15))");
 
- 
   const defs = svg.select("defs").empty() ? svg.append("defs") : svg.select("defs");
   
   const gradient = defs.append("linearGradient")
@@ -120,7 +204,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     .attr("stop-color", "rgba(26, 32, 44, 0.98)")
     .attr("stop-opacity", 1);
 
- 
   const tooltipRect = tooltipGroup.append("rect")
     .attr("fill", "url(#tooltipGradient)")
     .attr("rx", 12)
@@ -128,7 +211,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     .attr("stroke", "rgba(255, 255, 255, 0.1)")
     .attr("stroke-width", 1);
 
- 
   const innerGlow = tooltipGroup.append("rect")
     .attr("fill", "none")
     .attr("stroke", "rgba(255, 255, 255, 0.05)")
@@ -138,34 +220,32 @@ document.addEventListener('DOMContentLoaded', async function () {
     .attr("x", 1)
     .attr("y", 1);
 
- 
   const categoryLabel = tooltipGroup.append("text")
     .attr("fill", "rgba(255, 255, 255, 0.7)")
-    .attr("font-size", "11px")
+    .attr("font-size", fontSizes.tooltipCategory)
     .attr("font-weight", "500")
     .attr("x", 20)
     .attr("y", 22)
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif")
     .style("letter-spacing", "0.5px")
     .style("text-transform", "uppercase");
- 
+
   const valueText = tooltipGroup.append("text")
     .attr("fill", "white")
-    .attr("font-size", "18px")
+    .attr("font-size", fontSizes.tooltipValue)
     .attr("font-weight", "700")
     .attr("x", 20)
     .attr("y", 46)
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif");
 
-  
   const contextText = tooltipGroup.append("text")
     .attr("fill", "rgba(255, 255, 255, 0.6)")
-    .attr("font-size", "12px")
+    .attr("font-size", fontSizes.tooltipContext)
     .attr("font-weight", "400")
     .attr("x", 38)
     .attr("y", 68)
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif");
- 
+
   const ageIcon = tooltipGroup.append("text")
     .attr("font-size", "14px")
     .attr("x", 20)
@@ -176,12 +256,59 @@ document.addEventListener('DOMContentLoaded', async function () {
   let currentKeys = ["FINES"];
   let ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
 
-  // Enhanced number animation function
+  // Resize handler
+  function handleResize() {
+    const newDimensions = getResponsiveDimensions();
+    const newKpiPos = getKpiCardPosition();
+    const newFontSizes = getResponsiveFontSizes();
+    
+    // Update dimensions
+    margin = newDimensions.margin;
+    width = newDimensions.width;
+    height = newDimensions.height;
+    kpiPos = newKpiPos;
+    fontSizes = newFontSizes;
+    
+    // Update SVG
+    svg
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`);
+    
+    // Update chart transform
+    chart.attr("transform", `translate(${margin.left},${margin.top})`);
+    
+    // Update KPI card
+    kpiCard.attr("transform", `translate(${kpiPos.x}, ${kpiPos.y})`);
+    kpiBackground.attr("width", kpiPos.width).attr("height", kpiPos.height);
+    kpiInnerBorder.attr("width", kpiPos.width - 2).attr("height", kpiPos.height - 2);
+    kpiIcon.attr("x", kpiPos.width - 30).attr("font-size", window.innerWidth < 768 ? "16px" : "20px");
+    kpiValue.attr("y", window.innerWidth < 768 ? 38 : 45).attr("font-size", fontSizes.kpiValue);
+    kpiLabel.attr("font-size", fontSizes.kpiLabel);
+    kpiTrend.attr("y", kpiPos.height - 10).attr("font-size", fontSizes.kpiTrend);
+    
+    // Update tooltip font sizes
+    categoryLabel.attr("font-size", fontSizes.tooltipCategory);
+    valueText.attr("font-size", fontSizes.tooltipValue);
+    contextText.attr("font-size", fontSizes.tooltipContext);
+    
+    // Re-render chart if data exists
+    if (allData.length > 0) {
+      renderChart(currentKeys);
+    }
+  }
+
+  // Debounced resize handler
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(handleResize, 150);
+  });
+
   function animateKpiNumber(targetValue, duration = 1500) {
     const startValue = 0;
     const startTime = performance.now();
     
-    // Add subtle pulse effect to background during animation
     kpiBackground
       .transition()
       .duration(duration)
@@ -194,24 +321,19 @@ document.addEventListener('DOMContentLoaded', async function () {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      // Use easeOutQuart easing for smooth deceleration
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
       const currentValue = Math.floor(startValue + (targetValue - startValue) * easeOutQuart);
       
-      // Format number with commas
       const formattedValue = currentValue.toLocaleString();
       kpiValue.text(formattedValue);
       
-      // Add slight scale effect during animation
       const scale = 1 + (Math.sin(progress * Math.PI) * 0.05);
       kpiValue.attr("transform", `scale(${scale})`);
       
       if (progress < 1) {
         requestAnimationFrame(updateNumber);
       } else {
-        // Reset transform at the end
         kpiValue.attr("transform", "scale(1)");
-        // Final formatted value
         kpiValue.text(targetValue.toLocaleString());
       }
     }
@@ -219,7 +341,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     requestAnimationFrame(updateNumber);
   }
 
-  // Enhanced loading animation for data loading
   function showLoadingAnimation() {
     let dotCount = 0;
     const loadingInterval = setInterval(() => {
@@ -228,19 +349,15 @@ document.addEventListener('DOMContentLoaded', async function () {
       dotCount++;
     }, 300);
 
-    return loadingInterval; // Return interval ID for cleanup
+    return loadingInterval;
   }
 
-  // Load and process data using the import function
   async function initializeData() {
     try {
-      // Show loading animation
       const loadingInterval = showLoadingAnimation();
       
-      // Load data using your import function
       const [rawData] = await loadBar();
       
-      // Process the data (equivalent to your d3.rollup logic)
       const dataMap = d3.rollup(
         rawData,
         v => ({
@@ -250,19 +367,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         d => d.AGE_GROUP
       );
 
-      // Convert Map to array format matching your existing structure
       allData = Array.from(dataMap, ([ageGroup, values]) => ({ ageGroup, ...values }));
       allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
 
-      // Clear loading animation
       clearInterval(loadingInterval);
       
-      // Initialize chart and KPI
       renderChart(currentKeys);
       updateKpiCard(currentKeys); 
       updateToggleText(false); 
       
-      // Setup event listeners
       document.getElementById("toggleCharges").addEventListener("change", function () {
         const isCharges = this.checked;
         currentKeys = isCharges ? ["CHARGES"] : ["FINES"];
@@ -296,58 +409,33 @@ document.addEventListener('DOMContentLoaded', async function () {
     renderChart(currentKeys);
     updateKpiCard(currentKeys); 
   }
-  function showLoadingAnimation() {
-    // Show loading dots animation
-    let dotCount = 0;
-    const loadingInterval = setInterval(() => {
-      const dots = '.'.repeat((dotCount % 3) + 1);
-      kpiValue.text(`Loading${dots}`);
-      dotCount++;
-    }, 300);
 
-    // Stop loading animation after 1 second and show actual value
-    setTimeout(() => {
-      clearInterval(loadingInterval);
-      // Calculate total when data is ready
-      const currentKey = currentKeys[0];
-      const total = allData.reduce((sum, d) => sum + d[currentKey], 0);
-      animateKpiNumber(total);
-    }, 1000);
-  }
-
- 
   function updateToggleText(isCharges) {
     const toggleLabel = document.querySelector('label[for="toggleCharges"]');
     if (toggleLabel) {
-
       const textNodes = Array.from(toggleLabel.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
       if (textNodes.length > 0) {
-        textNodes[0].textContent = isCharges ?   'Showing Fines' : 'Showing Charges';
+        textNodes[0].textContent = isCharges ? 'Showing Fines' : 'Showing Charges';
       } else {
-        
         const textSpan = toggleLabel.querySelector('span, .toggle-text');
         if (textSpan) {
-          textSpan.textContent = isCharges ? 'Showing Fines' : 'Showing Charges' ;
+          textSpan.textContent = isCharges ? 'Showing Charges' : 'Showing Fines' ;
         } else {
-        
           toggleLabel.innerHTML = toggleLabel.innerHTML.replace(/Show (Fines|Charges)/, isCharges ? 'Showing Charges' : 'Showing Fines');
         }
       }
     }
     
-   
     const toggleText = document.querySelector('.toggle-text, .toggle-label-text');
     if (toggleText) {
-      toggleText.textContent = isCharges ?  'Show Fines' : 'Show Charges';
+      toggleText.textContent = isCharges ? 'Show Fines' : 'Show Charges';
     }
   }
 
- 
   function updateKpiCard(keys) {
     const currentKey = keys[0];
     const total = allData.reduce((sum, d) => sum + d[currentKey], 0);
     
-    // Animate label change
     kpiLabel.transition()
       .duration(200)
       .style("opacity", 0)
@@ -358,10 +446,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       .duration(200)
       .style("opacity", 1);
     
-    // Animate the number with enhanced animation
     animateKpiNumber(total, 1200);
 
-    // Animate icon change
     const iconEmoji = currentKey === "FINES" ? "🧾" : "⚖️";
     kpiIcon.transition()
       .duration(200)
@@ -375,11 +461,9 @@ document.addEventListener('DOMContentLoaded', async function () {
       .style("opacity", 1)
       .attr("transform", "scale(1)");
 
-    
     const iconColor = currentKey === "FINES" ? "#60a5fa" : "#3b82f6";
     kpiIcon.attr("fill", iconColor);
     
-    // Enhanced background pulse effect
     kpiBackground
       .transition()
       .duration(150)
@@ -395,7 +479,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const x0 = d3.scaleBand()
       .domain(allData.map(d => d.ageGroup))
       .range([0, width])
-      .paddingInner(0.1);
+      .paddingInner(window.innerWidth < 480 ? 0.2 : 0.1);
   
     const x1 = d3.scaleBand()
       .domain(keys)
@@ -415,17 +499,22 @@ document.addEventListener('DOMContentLoaded', async function () {
     chart.selectAll(".y-axis").remove();
     chart.selectAll(".axis-label").remove();
   
-    chart.append("g")
+    const xAxis = chart.append("g")
       .attr("class", "x-axis")
       .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(x0))
-      .selectAll("text")
-      .attr("transform", "rotate(-40)")
-      .style("text-anchor", "end");
+      .call(d3.axisBottom(x0));
+    
+    // Responsive x-axis labels
+    xAxis.selectAll("text")
+      .attr("transform", window.innerWidth < 768 ? "rotate(-45)" : "rotate(-40)")
+      .style("text-anchor", "end")
+      .style("font-size", window.innerWidth < 480 ? "10px" : "12px");
   
     chart.append("g")
       .attr("class", "y-axis")
-      .call(d3.axisLeft(y).ticks(5));
+      .call(d3.axisLeft(y).ticks(window.innerWidth < 480 ? 4 : 5))
+      .selectAll("text")
+      .style("font-size", window.innerWidth < 480 ? "10px" : "12px");
   
     const yLabelText = keys.length === 1
       ? (keys[0] === "FINES" ? "Number of Fines" : "Number of Charges")
@@ -437,6 +526,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       .attr("x", 0 - (height / 2))
       .attr("y", -margin.left + 15)
       .attr("text-anchor", "middle")
+      .style("font-size", window.innerWidth < 480 ? "11px" : "12px")
       .text(yLabelText);
   
     chart.selectAll(".x-axis-label").remove();
@@ -445,6 +535,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       .attr("x", width / 2)
       .attr("y", height + margin.bottom - 5)
       .attr("text-anchor", "middle")
+      .style("font-size", window.innerWidth < 480 ? "11px" : "12px")
       .text("Age Group");
   
     const barGroups = chart.selectAll(".barGroup")
@@ -490,6 +581,9 @@ document.addEventListener('DOMContentLoaded', async function () {
   
     barsEnter.merge(bars)
       .on("mouseover", function (event, d) {
+        // Skip tooltip on very small screens to avoid overlap
+        if (window.innerWidth < 480) return;
+        
         this.parentNode.appendChild(this);
         svg.node().appendChild(tooltipGroup.node());
   
@@ -504,7 +598,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const contextBBox = contextText.node().getBBox();
   
         const maxWidth = Math.max(categoryBBox.width, valueBBox.width, contextBBox.width);
-        const tooltipWidth = maxWidth + 48;
+        const tooltipWidth = Math.min(maxWidth + 48, width * 0.8);
         const tooltipHeight = 90;
   
         tooltipRect
@@ -543,6 +637,8 @@ document.addEventListener('DOMContentLoaded', async function () {
           .style("filter", "drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))");
       })
       .on("mouseout", function () {
+        if (window.innerWidth < 480) return;
+        
         tooltipGroup
           .transition()
           .duration(150)
@@ -568,6 +664,5 @@ document.addEventListener('DOMContentLoaded', async function () {
       .attr("fill", d => color(d.key));
   }
 
-  // Initialize the data loading process
   await initializeData();
 });
