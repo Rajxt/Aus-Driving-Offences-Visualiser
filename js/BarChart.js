@@ -1,4 +1,6 @@
-document.addEventListener('DOMContentLoaded', function () {
+import { loadBar } from './LoadData.js';
+
+document.addEventListener('DOMContentLoaded', async function () {
   const margin = { top: 120, right: 30, bottom: 70, left: 75 },
     width = 680 - margin.left - margin.right,
     height = 480 - margin.top - margin.bottom;
@@ -217,8 +219,101 @@ document.addEventListener('DOMContentLoaded', function () {
     requestAnimationFrame(updateNumber);
   }
 
-  // Enhanced loading animation for initial load
- 
+  // Enhanced loading animation for data loading
+  function showLoadingAnimation() {
+    let dotCount = 0;
+    const loadingInterval = setInterval(() => {
+      const dots = '.'.repeat((dotCount % 3) + 1);
+      kpiValue.text(`Loading${dots}`);
+      dotCount++;
+    }, 300);
+
+    return loadingInterval; // Return interval ID for cleanup
+  }
+
+  // Load and process data using the import function
+  async function initializeData() {
+    try {
+      // Show loading animation
+      const loadingInterval = showLoadingAnimation();
+      
+      // Load data using your import function
+      const [rawData] = await loadBar();
+      
+      // Process the data (equivalent to your d3.rollup logic)
+      const dataMap = d3.rollup(
+        rawData,
+        v => ({
+          FINES: d3.sum(v, d => +d.FINES),
+          CHARGES: d3.sum(v, d => +d.CHARGES),
+        }),
+        d => d.AGE_GROUP
+      );
+
+      // Convert Map to array format matching your existing structure
+      allData = Array.from(dataMap, ([ageGroup, values]) => ({ ageGroup, ...values }));
+      allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
+
+      // Clear loading animation
+      clearInterval(loadingInterval);
+      
+      // Initialize chart and KPI
+      renderChart(currentKeys);
+      updateKpiCard(currentKeys); 
+      updateToggleText(false); 
+      
+      // Setup event listeners
+      document.getElementById("toggleCharges").addEventListener("change", function () {
+        const isCharges = this.checked;
+        currentKeys = isCharges ? ["CHARGES"] : ["FINES"];
+        updateToggleText(isCharges); 
+        applySortingAndRender();
+      });
+
+      document.getElementById("sortOrder").addEventListener("change", function () {
+        applySortingAndRender();
+      });
+
+      console.log('Data loaded and processed:', allData);
+      
+    } catch (error) {
+      console.error('Error loading data:', error);
+      kpiValue.text('Error');
+    }
+  }
+
+  function applySortingAndRender() {
+    const sortOrder = document.getElementById("sortOrder").value;
+
+    if (sortOrder === "asc") {
+      allData.sort((a, b) => a[currentKeys[0]] - b[currentKeys[0]]);
+    } else if (sortOrder === "desc") {
+      allData.sort((a, b) => b[currentKeys[0]] - a[currentKeys[0]]);
+    } else {
+      allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
+    }
+
+    renderChart(currentKeys);
+    updateKpiCard(currentKeys); 
+  }
+  function showLoadingAnimation() {
+    // Show loading dots animation
+    let dotCount = 0;
+    const loadingInterval = setInterval(() => {
+      const dots = '.'.repeat((dotCount % 3) + 1);
+      kpiValue.text(`Loading${dots}`);
+      dotCount++;
+    }, 300);
+
+    // Stop loading animation after 1 second and show actual value
+    setTimeout(() => {
+      clearInterval(loadingInterval);
+      // Calculate total when data is ready
+      const currentKey = currentKeys[0];
+      const total = allData.reduce((sum, d) => sum + d[currentKey], 0);
+      animateKpiNumber(total);
+    }, 1000);
+  }
 
  
   function updateToggleText(isCharges) {
@@ -294,49 +389,6 @@ document.addEventListener('DOMContentLoaded', function () {
       .style("filter", "drop-shadow(0 4px 12px rgba(30, 58, 138, 0.3))");
   }
 
-  d3.csv("data/age.csv").then(rawData => {
-    const dataMap = d3.rollup(
-      rawData,
-      v => ({
-        FINES: d3.sum(v, d => +d.FINES),
-        CHARGES: d3.sum(v, d => +d.CHARGES),
-      }),
-      d => d.AGE_GROUP
-    );
-
-    allData = Array.from(dataMap, ([ageGroup, values]) => ({ ageGroup, ...values }));
-    allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
-
-    renderChart(currentKeys);
-    updateKpiCard(currentKeys); 
-    updateToggleText(false); 
-    document.getElementById("toggleCharges").addEventListener("change", function () {
-      const isCharges = this.checked;
-      currentKeys = isCharges ? ["CHARGES"] : ["FINES"];
-      updateToggleText(isCharges); 
-      applySortingAndRender();
-    });
-
-    document.getElementById("sortOrder").addEventListener("change", function () {
-      applySortingAndRender();
-    });
-
-    function applySortingAndRender() {
-      const sortOrder = document.getElementById("sortOrder").value;
-
-      if (sortOrder === "asc") {
-        allData.sort((a, b) => a[currentKeys[0]] - b[currentKeys[0]]);
-      } else if (sortOrder === "desc") {
-        allData.sort((a, b) => b[currentKeys[0]] - a[currentKeys[0]]);
-      } else {
-        allData.sort((a, b) => ageOrder.indexOf(a.ageGroup) - ageOrder.indexOf(b.ageGroup));
-      }
-
-      renderChart(currentKeys);
-      updateKpiCard(currentKeys); 
-    }
-  });
-
   function renderChart(keys) {
     const duration = 800;
   
@@ -361,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function () {
   
     chart.selectAll(".x-axis").remove();
     chart.selectAll(".y-axis").remove();
-    chart.selectAll(".axis-label").remove(); // ✅ remove previous label to prevent duplicates
+    chart.selectAll(".axis-label").remove();
   
     chart.append("g")
       .attr("class", "x-axis")
@@ -375,7 +427,6 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("class", "y-axis")
       .call(d3.axisLeft(y).ticks(5));
   
-    // ✅ Add dynamic Y-axis label
     const yLabelText = keys.length === 1
       ? (keys[0] === "FINES" ? "Number of Fines" : "Number of Charges")
       : "Number of Fines / Charges";
@@ -388,7 +439,6 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("text-anchor", "middle")
       .text(yLabelText);
   
-    // ✅ Optional: Add X-axis label (only once if needed)
     chart.selectAll(".x-axis-label").remove();
     chart.append("text")
       .attr("class", "x-axis-label")
@@ -397,7 +447,6 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("text-anchor", "middle")
       .text("Age Group");
   
-    // --- rest of your bar chart logic (unchanged) ---
     const barGroups = chart.selectAll(".barGroup")
       .data(allData, d => d.ageGroup);
   
@@ -518,5 +567,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("height", d => height - y(d.value))
       .attr("fill", d => color(d.key));
   }
-  
+
+  // Initialize the data loading process
+  await initializeData();
 });
