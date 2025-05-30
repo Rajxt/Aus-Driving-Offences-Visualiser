@@ -299,29 +299,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function renderChart(keys) {
     const duration = 800;
-
+  
     const x0 = d3.scaleBand()
       .domain(allData.map(d => d.ageGroup))
       .range([0, width])
       .paddingInner(0.1);
-
+  
     const x1 = d3.scaleBand()
       .domain(keys)
       .range([0, x0.bandwidth()])
       .padding(0.05);
-
+  
     const y = d3.scaleLinear()
       .domain([0, d3.max(allData, d => d3.max(keys, key => +d[key]))])
       .nice()
       .range([height, 0]);
-
+  
     const color = d3.scaleOrdinal()
       .domain(["FINES", "CHARGES"])
       .range(["#6b486b", "#4682b4"]);
-
+  
     chart.selectAll(".x-axis").remove();
     chart.selectAll(".y-axis").remove();
-
+    chart.selectAll(".axis-label").remove(); // ✅ remove previous label to prevent duplicates
+  
     chart.append("g")
       .attr("class", "x-axis")
       .attr("transform", `translate(0,${height})`)
@@ -329,36 +330,59 @@ document.addEventListener('DOMContentLoaded', function () {
       .selectAll("text")
       .attr("transform", "rotate(-40)")
       .style("text-anchor", "end");
-
+  
     chart.append("g")
       .attr("class", "y-axis")
       .call(d3.axisLeft(y).ticks(5));
-
+  
+    // ✅ Add dynamic Y-axis label
+    const yLabelText = keys.length === 1
+      ? (keys[0] === "FINES" ? "Number of Fines" : "Number of Charges")
+      : "Number of Fines / Charges";
+  
+    chart.append("text")
+      .attr("class", "axis-label")
+      .attr("transform", "rotate(-90)")
+      .attr("x", 0 - (height / 2))
+      .attr("y", -margin.left + 15)
+      .attr("text-anchor", "middle")
+      .text(yLabelText);
+  
+    // ✅ Optional: Add X-axis label (only once if needed)
+    chart.selectAll(".x-axis-label").remove();
+    chart.append("text")
+      .attr("class", "x-axis-label")
+      .attr("x", width / 2)
+      .attr("y", height + margin.bottom - 5)
+      .attr("text-anchor", "middle")
+      .text("Age Group");
+  
+    // --- rest of your bar chart logic (unchanged) ---
     const barGroups = chart.selectAll(".barGroup")
       .data(allData, d => d.ageGroup);
-
+  
     barGroups.exit()
       .transition()
       .duration(duration / 2)
       .attr("opacity", 0)
       .remove();
-
+  
     const barGroupsEnter = barGroups.enter()
       .append("g")
       .attr("class", "barGroup")
       .attr("opacity", 0)
       .attr("transform", d => `translate(${x0(d.ageGroup)},0)`);
-
+  
     const barGroupsMerge = barGroupsEnter.merge(barGroups);
-
+  
     barGroupsMerge.transition()
       .duration(duration)
       .attr("transform", d => `translate(${x0(d.ageGroup)},0)`)
       .attr("opacity", 1);
-
+  
     const bars = barGroupsMerge.selectAll("rect")
       .data(d => keys.map(key => ({ key, value: +d[key], ageGroup: d.ageGroup })), d => d.key);
-
+  
     bars.exit()
       .transition()
       .duration(duration / 2)
@@ -366,7 +390,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("height", 0)
       .attr("opacity", 0)
       .remove();
-
+  
     const barsEnter = bars.enter()
       .append("rect")
       .attr("x", d => x1(d.key))
@@ -374,56 +398,46 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("y", y(0))
       .attr("height", 0)
       .attr("fill", d => color(d.key));
-
+  
     barsEnter.merge(bars)
       .on("mouseover", function (event, d) {
-       
         this.parentNode.appendChild(this);
         svg.node().appendChild(tooltipGroup.node());
-
-      
+  
         const formattedValue = d.value.toLocaleString();
-        
-       
+  
         categoryLabel.text(d.key);
         valueText.text(formattedValue);
         contextText.text(d.ageGroup);
-
-      
+  
         const categoryBBox = categoryLabel.node().getBBox();
         const valueBBox = valueText.node().getBBox();
         const contextBBox = contextText.node().getBBox();
-        
+  
         const maxWidth = Math.max(categoryBBox.width, valueBBox.width, contextBBox.width);
         const tooltipWidth = maxWidth + 48;
         const tooltipHeight = 90;
-
-       
+  
         tooltipRect
           .attr("width", tooltipWidth)
           .attr("height", tooltipHeight);
-        
+  
         innerGlow
           .attr("width", tooltipWidth - 2)
           .attr("height", tooltipHeight - 2);
-
-        
+  
         const barCenterX = margin.left + x0(d.ageGroup) + x1(d.key) + x1.bandwidth() / 2;
         const barTopY = margin.top + y(d.value);
-        
+  
         let tooltipX = barCenterX - tooltipWidth / 2;
         let tooltipY = barTopY - tooltipHeight - 15;
-
-       
+  
         if (tooltipX < 10) tooltipX = 10;
         if (tooltipX + tooltipWidth > width + margin.left + margin.right - 10) {
           tooltipX = width + margin.left + margin.right - tooltipWidth - 10;
         }
-        
-        
         if (tooltipY < 10) tooltipY = 10;
-
-        
+  
         tooltipGroup
           .attr("transform", `translate(${tooltipX},${tooltipY}) scale(0.8)`)
           .style("opacity", 0)
@@ -432,8 +446,7 @@ document.addEventListener('DOMContentLoaded', function () {
           .ease(d3.easeCubicOut)
           .attr("transform", `translate(${tooltipX},${tooltipY}) scale(1)`)
           .style("opacity", 1);
-
-        
+  
         d3.select(this)
           .transition()
           .duration(200)
@@ -441,18 +454,16 @@ document.addEventListener('DOMContentLoaded', function () {
           .style("filter", "drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))");
       })
       .on("mouseout", function () {
-         
         tooltipGroup
           .transition()
           .duration(150)
           .ease(d3.easeCubicIn)
-          .attr("transform", function() {
+          .attr("transform", function () {
             const currentTransform = d3.select(this).attr("transform");
             return currentTransform.replace("scale(1)", "scale(0.9)");
           })
           .style("opacity", 0);
-
-       
+  
         d3.select(this)
           .transition()
           .duration(200)
@@ -467,4 +478,5 @@ document.addEventListener('DOMContentLoaded', function () {
       .attr("height", d => height - y(d.value))
       .attr("fill", d => color(d.key));
   }
+  
 });
