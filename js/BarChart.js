@@ -218,24 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Enhanced loading animation for initial load
-  function showLoadingAnimation() {
-    // Show loading dots animation
-    let dotCount = 0;
-    const loadingInterval = setInterval(() => {
-      const dots = '.'.repeat((dotCount % 3) + 1);
-      kpiValue.text(`Loading${dots}`);
-      dotCount++;
-    }, 300);
-
-    // Stop loading animation after 1 second and show actual value
-    setTimeout(() => {
-      clearInterval(loadingInterval);
-      // Calculate total when data is ready
-      const currentKey = currentKeys[0];
-      const total = allData.reduce((sum, d) => sum + d[currentKey], 0);
-      animateKpiNumber(total);
-    }, 1000);
-  }
+ 
 
  
   function updateToggleText(isCharges) {
