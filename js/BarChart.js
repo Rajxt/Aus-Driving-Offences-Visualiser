@@ -174,6 +174,69 @@ document.addEventListener('DOMContentLoaded', function () {
   let currentKeys = ["FINES"];
   let ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
 
+  // Enhanced number animation function
+  function animateKpiNumber(targetValue, duration = 1500) {
+    const startValue = 0;
+    const startTime = performance.now();
+    
+    // Add subtle pulse effect to background during animation
+    kpiBackground
+      .transition()
+      .duration(duration)
+      .style("filter", "drop-shadow(0 6px 16px rgba(30, 58, 138, 0.5))")
+      .transition()
+      .duration(300)
+      .style("filter", "drop-shadow(0 4px 12px rgba(30, 58, 138, 0.3))");
+
+    function updateNumber(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Use easeOutQuart easing for smooth deceleration
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      const currentValue = Math.floor(startValue + (targetValue - startValue) * easeOutQuart);
+      
+      // Format number with commas
+      const formattedValue = currentValue.toLocaleString();
+      kpiValue.text(formattedValue);
+      
+      // Add slight scale effect during animation
+      const scale = 1 + (Math.sin(progress * Math.PI) * 0.05);
+      kpiValue.attr("transform", `scale(${scale})`);
+      
+      if (progress < 1) {
+        requestAnimationFrame(updateNumber);
+      } else {
+        // Reset transform at the end
+        kpiValue.attr("transform", "scale(1)");
+        // Final formatted value
+        kpiValue.text(targetValue.toLocaleString());
+      }
+    }
+    
+    requestAnimationFrame(updateNumber);
+  }
+
+  // Enhanced loading animation for initial load
+  function showLoadingAnimation() {
+    // Show loading dots animation
+    let dotCount = 0;
+    const loadingInterval = setInterval(() => {
+      const dots = '.'.repeat((dotCount % 3) + 1);
+      kpiValue.text(`Loading${dots}`);
+      dotCount++;
+    }, 300);
+
+    // Stop loading animation after 1 second and show actual value
+    setTimeout(() => {
+      clearInterval(loadingInterval);
+      // Calculate total when data is ready
+      const currentKey = currentKeys[0];
+      const total = allData.reduce((sum, d) => sum + d[currentKey], 0);
+      animateKpiNumber(total);
+    }, 1000);
+  }
+
  
   function updateToggleText(isCharges) {
     const toggleLabel = document.querySelector('label[for="toggleCharges"]');
@@ -205,52 +268,46 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateKpiCard(keys) {
     const currentKey = keys[0];
     const total = allData.reduce((sum, d) => sum + d[currentKey], 0);
-    const formattedTotal = total.toLocaleString();
     
-     
+    // Animate label change
     kpiLabel.transition()
-      .duration(300)
+      .duration(200)
       .style("opacity", 0)
       .transition()
       .duration(0)
       .text(`TOTAL ${currentKey}`)
       .transition()
-      .duration(300)
+      .duration(200)
       .style("opacity", 1);
     
-    kpiValue.transition()
-      .duration(300)
-      .style("opacity", 0)
-      .transition()
-      .duration(0)
-      .text(formattedTotal)
-      .transition()
-      .duration(300)
-      .style("opacity", 1);
+    // Animate the number with enhanced animation
+    animateKpiNumber(total, 1200);
 
-   
+    // Animate icon change
     const iconEmoji = currentKey === "FINES" ? "🧾" : "⚖️";
     kpiIcon.transition()
-      .duration(300)
+      .duration(200)
       .style("opacity", 0)
+      .attr("transform", "scale(0.8)")
       .transition()
       .duration(0)
       .text(iconEmoji)
       .transition()
-      .duration(300)
-      .style("opacity", 1);
+      .duration(200)
+      .style("opacity", 1)
+      .attr("transform", "scale(1)");
 
     
     const iconColor = currentKey === "FINES" ? "#60a5fa" : "#3b82f6";
     kpiIcon.attr("fill", iconColor);
     
-    
+    // Enhanced background pulse effect
     kpiBackground
       .transition()
-      .duration(200)
-      .style("filter", "drop-shadow(0 4px 12px rgba(30, 58, 138, 0.4))")
+      .duration(150)
+      .style("filter", "drop-shadow(0 6px 20px rgba(30, 58, 138, 0.6))")
       .transition()
-      .duration(200)
+      .duration(300)
       .style("filter", "drop-shadow(0 4px 12px rgba(30, 58, 138, 0.3))");
   }
 
