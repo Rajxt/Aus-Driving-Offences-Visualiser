@@ -45,12 +45,12 @@ nav {
     max-width: 600px;
 }
 
-.main-container {
+.main-cont {
     width: 100%;
     min-height: calc(100vh - 180px);
 }
 
-.content-area {
+.cont-area {
     flex: 1;
     padding: 0 20px;
 }
@@ -122,7 +122,7 @@ nav {
     margin-bottom: 20px;
 }
 
-/* UPDATED CONTROLS LAYOUT */
+
 .demo {
     margin: 20px auto 40px;
     width: 100%;
@@ -138,25 +138,25 @@ nav {
     justify-content: space-between;
 }
 
-.year-slider-container {
+.yrslider-cont {
     flex: 1;
     width: 100px;
 }
 
-.year-slider-container label {
+.yrslider-cont label {
     display: block;
     margin-bottom: 10px;
     font-weight: 600;
     color: var(--text-dark);
 }
 
-.state-selector-container {
+.statesele-cont {
     margin-top: 35px;
     flex: 0 0 auto;
 }
 
 
-.charts-container {
+.charts-cont {
     display: flex;
     gap: 30px;
     max-width: 1600px;
@@ -172,27 +172,14 @@ nav {
 }
 
 .chart-wrapper:first-child {
-    flex: 1; /* Changed from fixed width to flex: 1 */
+    flex: 1; 
 }
 
 .chart-wrapper:last-child {
     flex: 1;
 }
 
-.national-charts {
-    width: 100%;
-    height: 500px; /* Increased height to match line chart */
-    background-color: var(--white);
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.line-chart-area {
+.nationalMap {
     width: 100%;
     height: 500px; 
     background-color: var(--white);
@@ -205,17 +192,30 @@ nav {
     overflow: hidden;
 }
 
-.section-content {
+.lineChart {
+    width: 100%;
+    height: 500px; 
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.section-cont {
     scroll-margin-top: 100px;
     padding: 20px 0;
 }
 
-.select-container {
+.select-cont {
     display: flex;
     align-items: center;
     gap: 12px;
     font-family: 'Segoe UI', sans-serif;
-    margin-bottom: 20px; /* Add margin below the selector */
+    margin-bottom: 20px;  
 }
 
 .select-label {
@@ -239,7 +239,6 @@ nav {
     transition: all 0.3s ease;
     cursor: pointer;
     color: #333;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="%23666" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
     background-repeat: no-repeat;
     background-position: right 12px center;
     background-size: 16px 16px;
@@ -256,9 +255,10 @@ nav {
     border-color: #4a90e2;
     box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
 }
+
 /* kpi cards */
 
-.kpi-container {
+.kpi-cont {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;

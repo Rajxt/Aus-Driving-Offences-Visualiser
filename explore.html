@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
 </head>
 <body>
+
+    <!-- Header -->
     <header>
         <nav>
             <ul class="navtab">
@@ -19,47 +21,60 @@
             </ul>
         </nav>
     </header>
-    <div class="main-container">
-        <main class="content-area">
+
+    <!-- body -->
+    <div class="main-cont">
+        <main class="cont-area">
             
-            <section id="national-overview" class="section-content">
+            <section id="nat-overview" class="section-cont">
                 <div class="container">
                     <h2>National Overview</h2>
                     <p>Explore the trend amongst fines in Australia through Choropleth Map <br> and a line chart to observe trends over the years for each Australian State </p> 
                     <p> Click on states on the map to view the trends changing on line chart as per states over the years </p>
                 </div>
+
+                <!-- filters container -->
             
                 <div class="demo">
-                    <div class="year-slider-container">
+                    <div class="yrslider-cont">
                         <label for="yearSlider" class="form-label">
                             Fines for Year: <span id="yearLabel">2023</span>
                         </label>
                         <input type="range" class="form-range" min="2008" max="2023" value="2023" id="yearSlider" />
                     </div>
-                    <div class="state-selector-container">
-                        <div class="select-container">
+                    <div class="statesele-cont">
+                        <div class="select-cont">
                             <label for="state" class="select-label">Select State:</label>
                             <select id="state" class="styled-select"></select>
                         </div>
                     </div>
                 </div>
-           
-                <div class="charts-container">
+
+                <!-- Choropleth -->
+        
+                <div class="charts-cont">
                     <div class="chart-wrapper">
-                        <div class="national-charts">
+                        <div class="nationalMap">
                             <svg id="choropleth"></svg>
                             <div id="legend"></div>
-                        </div>
-                        
+                        </div>   
                     </div>
+
+                <!-- Line Chart -->
+
                     <div class="chart-wrapper">
-                        <div class="line-chart-area">
+                        <div class="lineChart">
                             <svg id="line"></svg>
                         </div>
                     </div>
                 </div>
 
-                <div class="kpi-container">
+                <!-- KPI Container -->
+
+                <div class="kpi-cont">
+
+                    <!-- Card 1 -->
+
                     <div class="kpi-card">
                         <div class="kpi-header">
                             <div class="kpi-icon">🏆</div>
@@ -71,32 +86,33 @@
                         <div class="kpi-subtitle" id="highestValue">1.1M fines (2023)</div>
                         <div class="kpi-change positive" id="highestChange"> 32.5% drop in fines since 2021</div>
                     </div>
-                
-            
 
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <div class="kpi-icon">📉</div>
-                        <div>
-                            <h3 class="kpi-title">Most Consistent State</h3>
+                      <!-- Card 2 -->
+                
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <div class="kpi-icon">📉</div>
+                            <div>
+                                <h3 class="kpi-title">Most Consistent State</h3>
+                            </div>
                         </div>
+                        <div class="kpi-value" id="lowestState">NT</div>
+                        <div class="kpi-subtitle" id="lowestValue">Standard Deviation: 8517</div>
+                        <div class="kpi-change negative" id="lowestChange">Least variability in fines from 2008 to 2023</div>
                     </div>
-                    <div class="kpi-value" id="lowestState">NT</div>
-                    <div class="kpi-subtitle" id="lowestValue">Standard Deviation: 8517</div>
-                    <div class="kpi-change negative" id="lowestChange">Least variability in fines from 2008 to 2023</div>
                 </div>
-
-                </div>
-
-
-
-                
+       
             </section>
         </main>
     </div>
+
+    <!-- Footer -->
+
     <footer>
         <p>&copy; 2025 Traffic Violations Data Center. All data is for informational purposes only.</p>
     </footer>
+
+        <!-- JS Scripts -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script type="module" src="js/Choropleth.js"></script>
     <script type="module" src="js/LineChart.js"></script>
