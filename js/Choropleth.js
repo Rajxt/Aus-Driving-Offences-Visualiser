@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let geoData, data;
     let isPlaying = false;
     let playInterval = null;
-    const playSpeed = 700; // milliseconds between year changes
+    const playSpeed = 700;  
 
     const projection = d3.geoMercator()
         .center([134, -28])
