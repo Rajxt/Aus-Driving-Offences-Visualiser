@@ -92,14 +92,14 @@ nav {
   z-index: 0;
 }
 
-.section-content {
+.section-cont {
   display: none;
   width: 100%;
   margin-bottom: 50px;
   margin-top: 50px;
 }
 
-.section-content.active {
+.section-cont.active {
   display: block;
 }
 

@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // Responsive KPI card positioning and sizing
   function getKpiCardPosition() {
     const screenWidth = window.innerWidth;
     if (screenWidth < 768) {
@@ -108,7 +107,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     .attr("stroke", "rgba(147, 197, 253, 0.2)")
     .attr("stroke-width", 1);
 
-  // Responsive font sizes
   function getResponsiveFontSizes() {
     const screenWidth = window.innerWidth;
     if (screenWidth < 480) {
@@ -179,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     .style("font-family", "'Inter', 'Segoe UI', system-ui, sans-serif")
     .text("All age groups");
 
-  // Tooltip with responsive sizing
+
   const tooltipGroup = svg.append("g")
     .style("pointer-events", "none")
     .style("opacity", 0)
@@ -256,29 +254,28 @@ document.addEventListener('DOMContentLoaded', async function () {
   let currentKeys = ["FINES"];
   let ageOrder = ["0-16", "17-25", "26-39", "40-64", "65 and over"];
 
-  // Resize handler
+
   function handleResize() {
     const newDimensions = getResponsiveDimensions();
     const newKpiPos = getKpiCardPosition();
     const newFontSizes = getResponsiveFontSizes();
     
-    // Update dimensions
+
     margin = newDimensions.margin;
     width = newDimensions.width;
     height = newDimensions.height;
     kpiPos = newKpiPos;
     fontSizes = newFontSizes;
     
-    // Update SVG
+    
     svg
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`);
     
-    // Update chart transform
+    
     chart.attr("transform", `translate(${margin.left},${margin.top})`);
     
-    // Update KPI card
     kpiCard.attr("transform", `translate(${kpiPos.x}, ${kpiPos.y})`);
     kpiBackground.attr("width", kpiPos.width).attr("height", kpiPos.height);
     kpiInnerBorder.attr("width", kpiPos.width - 2).attr("height", kpiPos.height - 2);
@@ -287,18 +284,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     kpiLabel.attr("font-size", fontSizes.kpiLabel);
     kpiTrend.attr("y", kpiPos.height - 10).attr("font-size", fontSizes.kpiTrend);
     
-    // Update tooltip font sizes
+  
     categoryLabel.attr("font-size", fontSizes.tooltipCategory);
     valueText.attr("font-size", fontSizes.tooltipValue);
     contextText.attr("font-size", fontSizes.tooltipContext);
     
-    // Re-render chart if data exists
+    
     if (allData.length > 0) {
       renderChart(currentKeys);
     }
   }
 
-  // Debounced resize handler
+  
   let resizeTimeout;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
@@ -581,7 +578,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   
     barsEnter.merge(bars)
       .on("mouseover", function (event, d) {
-        // Skip tooltip on very small screens to avoid overlap
+        
         if (window.innerWidth < 480) return;
         
         this.parentNode.appendChild(this);

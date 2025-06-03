@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'ACT': '#90caf9'    
     };
 
-    function updateChoropleth(metric = 'FINES', year) {
+    function updateChoro(metric = 'FINES', year) {
         const filteredData = data.filter(d => +d.YEAR === +year);
         const valueByState = d3.rollup(
             filteredData,
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     yearLabel.textContent = currentYear;
                 }
                 
-                updateChoropleth('FINES', currentYear);
+                updateChoro('FINES', currentYear);
             }
         }, playSpeed);
     }
@@ -199,9 +199,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Play button for choro animation
    
     function createPlayButton() {
-        const yearSliderContainer = document.querySelector('.year-slider-container');
+        const yearSliderContainer = document.querySelector('.yrslider-cont');
         if (yearSliderContainer && !document.getElementById('playButton')) {
             const playButton = document.createElement('button');
             playButton.id = 'playButton';
@@ -256,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
             yearSlider.addEventListener('input', function () {
                 const selectedYear = +this.value;
                 yearLabel.textContent = selectedYear;
-                updateChoropleth('FINES', selectedYear);
+                updateChoro('FINES', selectedYear);
                 
                 
                 if (isPlaying) {
@@ -264,9 +265,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
             
-            updateChoropleth('FINES', +yearSlider.value);
+            updateChoro('FINES', +yearSlider.value);
         } else {
-            updateChoropleth('FINES', 2023);
+            updateChoro('FINES', 2023);
         }
     });
 

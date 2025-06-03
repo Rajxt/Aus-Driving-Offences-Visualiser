@@ -122,7 +122,6 @@ nav {
     margin-bottom: 20px;
 }
 
-
 .demo {
     margin: 20px auto 40px;
     width: 100%;
@@ -131,7 +130,6 @@ nav {
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     padding: 15px;
-   
     display: flex;
     gap: 40px;
     align-items: center;
@@ -154,7 +152,6 @@ nav {
     margin-top: 35px;
     flex: 0 0 auto;
 }
-
 
 .charts-cont {
     display: flex;
@@ -262,7 +259,6 @@ nav {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
-    
     gap: 40px;
     margin-bottom: 30px;
     margin-top: 30px;
@@ -334,6 +330,24 @@ nav {
     align-items: baseline;
 }
 
+.kpi-subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.kpi-change {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.kpi-change.positive {
+    color: #059669;
+}
+
+.kpi-change.negative {
+    color: #dc2626;
+}
 
 footer {
     width: 100%;
@@ -346,4 +360,277 @@ footer {
     background-color: var(--dark-blue);
     color: var(--white);
     margin-top: auto;
+}
+
+/* Responsive Design */
+
+/* Large tablets and small desktops */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 100%;
+        padding: 20px 15px;
+    }
+    
+    .charts-cont {
+        max-width: 100%;
+        gap: 20px;
+    }
+    
+    .kpi-cont {
+        max-width: 100%;
+        gap: 20px;
+        padding: 0 20px;
+    }
+}
+
+/* Tablets */
+@media (max-width: 992px) {
+    .container h2 {
+        font-size: 1.8rem;
+    }
+    
+    .container p {
+        font-size: 1rem;
+    }
+    
+    .demo {
+        flex-direction: column;
+        gap: 20px;
+        align-items: stretch;
+        padding: 20px;
+    }
+    
+    .yrslider-cont {
+        width: 100%;
+    }
+    
+    .statesele-cont {
+        margin-top: 0;
+        width: 100%;
+    }
+    
+    .charts-cont {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .nationalMap, .lineChart {
+        height: 400px;
+    }
+    
+    .kpi-cont {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .kpi-card {
+        width: 100%;
+    }
+}
+
+/* Mobile landscape and small tablets */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px 10px;
+    }
+    
+    .container h2 {
+        font-size: 1.6rem;
+        margin-bottom: 8px;
+    }
+    
+    .container p {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+    
+    .cont-area {
+        padding: 0 10px;
+    }
+    
+    .demo {
+        margin: 15px auto 25px;
+        padding: 15px;
+    }
+    
+    .select-cont {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin-bottom: 0;
+    }
+    
+    .select-label {
+        min-width: unset;
+        font-size: 14px;
+    }
+    
+    .styled-select {
+        min-width: unset;
+        width: 100%;
+        font-size: 14px;
+        padding: 10px 35px 10px 12px;
+    }
+    
+    .charts-cont {
+        padding: 0 10px;
+        gap: 15px;
+    }
+    
+    .nationalMap, .lineChart {
+        height: 300px;
+    }
+    
+    .kpi-card {
+        padding: 15px;
+    }
+    
+    .kpi-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        margin-right: 12px;
+    }
+    
+    .kpi-value {
+        font-size: 24px;
+    }
+    
+    .kpi-title {
+        font-size: 12px;
+    }
+}
+
+/* Mobile portrait */
+@media (max-width: 576px) {
+    .container h2 {
+        font-size: 1.4rem;
+    }
+    
+    .container p {
+        font-size: 0.85rem;
+        padding: 0 10px;
+    }
+    
+    .demo {
+        margin: 10px auto 20px;
+        padding: 12px;
+        border-radius: 8px;
+    }
+    
+    .yrslider-cont label {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .styled-select {
+        font-size: 13px;
+        padding: 8px 30px 8px 10px;
+        border-radius: 8px;
+    }
+    
+    .charts-cont {
+        gap: 12px;
+    }
+    
+    .nationalMap, .lineChart {
+        height: 250px;
+        border-radius: 8px;
+    }
+    
+    .kpi-cont {
+        gap: 15px;
+        margin: 20px auto;
+    }
+    
+    .kpi-card {
+        padding: 12px;
+        border-radius: 12px;
+    }
+    
+    .kpi-header {
+        margin-bottom: 12px;
+    }
+    
+    .kpi-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+        margin-right: 10px;
+    }
+    
+    .kpi-value {
+        font-size: 20px;
+    }
+    
+    .kpi-title {
+        font-size: 11px;
+    }
+    
+    .kpi-subtitle, .kpi-change {
+        font-size: 12px;
+    }
+    
+    footer {
+        height: 80px;
+        padding: 15px;
+        font-size: 14px;
+    }
+}
+
+/* Very small mobile devices */
+@media (max-width: 400px) {
+    .container h2 {
+        font-size: 1.2rem;
+    }
+    
+    .container p {
+        font-size: 0.8rem;
+    }
+    
+    .nationalMap, .lineChart {
+        height: 220px;
+    }
+    
+    .kpi-value {
+        font-size: 18px;
+    }
+    
+    .kpi-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+    .container {
+        padding: 10px;
+    }
+    
+    .container h2 {
+        font-size: 1.3rem;
+        margin-bottom: 5px;
+    }
+    
+    .container p {
+        margin-bottom: 10px;
+    }
+    
+    .demo {
+        margin: 10px auto 15px;
+        padding: 10px;
+    }
+    
+    .nationalMap, .lineChart {
+        height: 200px;
+    }
+    
+    .kpi-cont {
+        margin: 15px auto;
+    }
+    
+    .kpi-card {
+        padding: 10px;
+    }
 }

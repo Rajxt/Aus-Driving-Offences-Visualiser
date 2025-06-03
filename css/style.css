@@ -38,6 +38,7 @@ header {
   justify-content: center;
   padding: 16px;
 }
+
 /* Navbar styling */
 nav {
   width: 100%;
@@ -107,30 +108,32 @@ nav {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 0;
+  padding: 20px;
 }
-
 
 .hero .content {
   max-width: 800px;
   color: var(--white);
   margin-top: 0px;
+  width: 100%;
 }
 
 .hero h1 {
-  font-size: 3.5rem;
+  font-size: clamp(2rem, 8vw, 3.5rem);
   font-weight: 700;
-  margin-top: 150px;
+  margin-top: 100px;
   margin-bottom: 20px;
-
   font-family: "Cal Sans", sans-serif;
   line-height: 1.2;
 }
 
 .hero p {
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 4vw, 1.5rem);
   margin-bottom: 40px;
   opacity: 0.9;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero .explore {
@@ -143,6 +146,7 @@ nav {
   text-decoration: none;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
 }
 
 .hero .explore:hover {
@@ -151,14 +155,14 @@ nav {
 }
 
 .main {
-  padding: 150px 20px;
+  padding: 80px 20px;
   background-color: var(--light-gray);
-  height: 100vh;
+  min-height: 60vh;
 }
 
 .main h2.key {
   text-align: center;
-  font-size: 2.5rem;
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
   color: var(--dark-blue);
   margin-bottom: 40px;
   font-family: "Cal Sans", sans-serif;
@@ -166,19 +170,19 @@ nav {
 
 .key-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 30px;
   max-width: 1200px;
   margin: 0 auto;
 }
+
 #map {
-  width: 150%;
-  max-width: 200px;  
+  width: 100%;
+  max-width: 150px;  
   height: auto;      
   display: block;
   margin: 0 auto;    
 }
-
 
 .card {
   background-color: var(--white);
@@ -186,6 +190,9 @@ nav {
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
@@ -194,7 +201,7 @@ nav {
 }
 
 .card h3 {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 4vw, 1.5rem);
   padding: 20px 20px 10px;
   color: var(--dark-blue);
   font-family: "Cal Sans", sans-serif;
@@ -208,11 +215,14 @@ nav {
   justify-content: center;
   color: var(--text-gray);
   font-weight: 500;
+  flex: 1;
 }
 
 .card p {
   padding: 15px 20px 20px;
   color: var(--text-gray);
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  line-height: 1.5;
 }
 
 footer {
@@ -222,6 +232,7 @@ footer {
   background-color: var(--dark-blue);
   color: var(--white);
   margin-top: auto;
+  font-size: clamp(0.8rem, 2vw, 1rem);
 }
 
 @keyframes gradientShift {
@@ -233,5 +244,115 @@ footer {
   }
   100% {
     background-position: 0% 50%;
+  }
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  .hero {
+    min-height: 80vh;
+    padding: 20px 15px;
+  }
+  
+  .hero h1 {
+    margin-top: 80px;
+  }
+  
+  .hero .explore {
+    padding: 12px 30px;
+  }
+  
+  .main {
+    padding: 60px 15px;
+  }
+  
+  .key-cards {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 10px;
+  }
+  
+  .card {
+    min-height: 280px;
+  }
+  
+  .card .graph {
+    height: 150px;
+  }
+  
+  #map {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 12px;
+  }
+  
+  .hero {
+    min-height: 70vh;
+    padding: 15px 10px;
+  }
+  
+  .hero h1 {
+    margin-top: 60px;
+    margin-bottom: 15px;
+  }
+  
+  .hero p {
+    margin-bottom: 30px;
+  }
+  
+  .hero .explore {
+    padding: 10px 25px;
+  }
+  
+  .main {
+    padding: 50px 10px;
+  }
+  
+  .main h2.key {
+    margin-bottom: 30px;
+  }
+  
+  .key-cards {
+    gap: 15px;
+    padding: 0 5px;
+  }
+  
+  .card {
+    min-height: 260px;
+  }
+  
+  .card h3 {
+    padding: 15px 15px 10px;
+  }
+  
+  .card p {
+    padding: 10px 15px 15px;
+  }
+  
+  .card .graph {
+    height: 130px;
+  }
+  
+  #map {
+    max-width: 100px;
+  }
+  
+  footer {
+    padding: 15px 10px;
+  }
+}
+
+
+@media (min-width: 1200px) {
+  .hero h1 {
+    margin-top: 120px;
+  }
+  
+  .key-cards {
+    grid-template-columns: repeat(3, 1fr);
   }
 }

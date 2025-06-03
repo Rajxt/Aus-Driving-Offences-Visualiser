@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="css/age.css">
   </head>
   <body>
+
+    <!-- Header -->
     <header>
       <nav>
         <ul class="navtab">
@@ -19,32 +21,45 @@
       </nav>
     </header>
 
-    <section id="age-group" class="section-content">
+    <!-- Heading, subheading -->
+
+    <section id="agegrp" class="section-cont">
       <div class="container">
           <h2>Age Group</h2>
           <p>Analyse Age group of offenders involved in charges and arrests through a bar chart </p>
       </div>
+
+      <!-- Bar chart -->
+
       <div class="demo">
+        <!-- toggle button -->
+
           <label class="switch">
               <input type="checkbox" id="toggleCharges">
-              <span class="slider"></span>
+              <span class="slider"></span> 
               <span class="toggle-text">Show Charges Instead</span>
             </label>
+
+            <!-- Sorting -->
+
             <label for="sortOrder">Sort bars by value:</label>
               <select id="sortOrder">
               <option value="none">No Sort</option>
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>
               </select>
-          <div class="national-charts">
-              <svg id="BarChart"></svg>
+              <!-- Chart Area -->
 
+          <div class="chart">
+              <svg id="BarChart"></svg>
           </div>                    
       </div>
   </section>
+
+  <!-- Js scripts -->
+
     <script type="module" src="js/BarChart.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-
     <script src="js/LoadData.js"></script>
     <script src="js/scrollspy.js"></script>
   </body>
