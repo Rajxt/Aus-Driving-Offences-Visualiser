@@ -5,67 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Speeding Violations Data Portal</title>
   <link rel="stylesheet" href="css/style.css"/>
-
 </head>
 <body>
-  <header>
-
-    <!-- Navbar -->
-    <nav>
+  <!-- Navigation landmark -->
+  <header role="banner">
+    <nav role="navigation" aria-label="Main Navigation">
       <ul class="navtab">
-        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="index.html" class="active" aria-current="page">Home</a></li>
         <li><a href="explore.html">Overview</a></li>
         <li><a href="age.html">Age Analysis</a></li>
         <li><a href="about.html">About Us</a></li>
-        <div class="pill"></div>
+        <div class="pill" aria-hidden="true"></div>
       </ul>
     </nav>
   </header>
 
-  <!-- Hero Content -->
-  <section class="section-cont active" id="dashboard">
-    <section class="hero">
+  <!-- Main content -->
+  <main id="dashboard" class="section-cont active" role="main">
+    <section class="hero" aria-labelledby="hero-heading">
       <div class="content">
-        <h1>Swipe. Drive. Consequences</h1>
+        <h1 id="hero-heading">Swipe. Drive. Consequences</h1>
         <p>An interactive story of how mobile phone usage while driving is shaping fines, enforcement, and road safety across Australia.</p>
-        <a href="explore.html" class="explore" data-tab="trends">Explore Data</a>
+        <a href="explore.html" class="explore" data-tab="trends" role="button">Explore Data</a>
       </div>
     </section>
 
-    <!-- Key features -->
-    <section class="main">
-      <h2 class="key">Key Insights</h2>
+    <!-- Key features section -->
+    <section class="main" aria-labelledby="key-insights">
+      <h2 class="key" id="key-insights">Key Insights</h2>
       <div class="key-cards">
-        <div class="card">
-          <h3>Distribution of fines </h3>
+
+        <!-- Card 1 -->
+        <div class="card" role="region" aria-labelledby="card1-title">
+          <h3 id="card1-title">Distribution of fines</h3>
           <div class="graph">
-            <img src="media/choro.png" id = "map">
+            <img src="media/choro.png" alt="Choropleth map showing fine distribution across states" id="map">
           </div>
           <p>Analysis of mobile phone usage fines across different states</p>
         </div>
-        <div class="card">
-          <h3>Breakdown of Jurisdictions</h3>
+
+        <!-- Card 2 -->
+        <div class="card" role="region" aria-labelledby="card2-title">
+          <h3 id="card2-title">Breakdown of Jurisdictions</h3>
           <div class="graph">
-            <img src="media/line.png" id = "map">
+            <img src="media/line.png" alt="Line chart showing fine trends over years" id="map">
           </div>
-          <p>Visualise trends over the years for the fines in diffent states</p>
+          <p>Visualise trends over the years for the fines in different states</p>
         </div>
-        <div class="card">
-          <h3>Age Group Analysis</h3>
+
+        <!-- Card 3 -->
+        <div class="card" role="region" aria-labelledby="card3-title">
+          <h3 id="card3-title">Age Group Analysis</h3>
           <div class="graph">
-            <img src="media/bar.png" id = "map">
+            <img src="media/bar.png" alt="Bar chart showing age group-related fines and arrests in 2023" id="map">
           </div>
           <p>Find out specific age groups fined, charged and arrested for 2023</p>
         </div>
+
       </div>
     </section>
-  </section>
+  </main>
 
-  <footer>
+  <footer role="contentinfo">
     <p>&copy; 2025 Traffic Violations Data Center. All data is for informational purposes only.</p>
   </footer>
 
   <script src="js/scrollspy.js"></script>
-  
 </body>
 </html>
