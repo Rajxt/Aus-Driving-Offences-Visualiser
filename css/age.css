@@ -193,6 +193,14 @@ svg {
             background-size: 16px 16px;
             transition: border-color 0.3s, box-shadow 0.3s;
           }
+
+          .acessbtn {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
           
           #sortOrder:hover {
             border-color: #1976D2;  
