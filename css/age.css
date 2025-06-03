@@ -18,6 +18,10 @@
   font-family: "DM Sans", sans-serif;
 }
 
+.visually-hidden{
+  display: none;
+}
+
 body {
   background-color: #d6e6ff !important;
   color: var(--text-dark);
@@ -177,6 +181,7 @@ svg {
             font-size: 16px;
             color: #333;
           }
+          
         
           #sortOrder {
             padding: 10px 14px;
