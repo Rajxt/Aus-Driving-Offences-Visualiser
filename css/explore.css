@@ -205,6 +205,10 @@ nav {
 .section-cont {
     scroll-margin-top: 100px;
     padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .select-cont {
@@ -368,6 +372,16 @@ footer {
     margin: 2rem 0;
     flex-wrap: wrap;
 }
+#conclusions{
+    background-color: var(--white);
+    border-radius: 12px;
+    align-items: center;
+    text-align: justify;
+    width: 85%;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+}
+
 
 
 /* Responsive Design */
