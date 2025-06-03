@@ -48,6 +48,8 @@ The data has been comprehensively processed using **KNIME**, which has facilitat
 
 ## Technologies used
 HTML, CSS, JS, D3.js, Bootstrap
+GeoJSON file used for choropleth: https://github.com/rowanhogan/australian-states
+
 
 ## Website Features
 
