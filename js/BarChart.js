@@ -1,7 +1,7 @@
 import { loadBar } from './LoadData.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
-  // Responsive dimensions with breakpoints
+
   function getResponsiveDimensions() {
     const containerWidth = document.getElementById("BarChart").clientWidth || 800;
     const screenWidth = window.innerWidth;
@@ -9,17 +9,17 @@ document.addEventListener('DOMContentLoaded', async function () {
     let margin, width, height;
     
     if (screenWidth < 480) {
-      // Mobile
+    
       margin = { top: 100, right: 20, bottom: 80, left: 50 };
       width = Math.max(containerWidth - margin.left - margin.right, 280);
       height = 400 - margin.top - margin.bottom;
     } else if (screenWidth < 768) {
-      // Tablet
+
       margin = { top: 110, right: 25, bottom: 75, left: 60 };
       width = Math.max(containerWidth - margin.left - margin.right, 400);
       height = 440 - margin.top - margin.bottom;
     } else {
-      // Desktop
+     
       margin = { top: 120, right: 30, bottom: 70, left: 75 };
       width = Math.max(containerWidth - margin.left - margin.right, 550);
       height = 480 - margin.top - margin.bottom;
@@ -490,7 +490,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   
     const color = d3.scaleOrdinal()
       .domain(["FINES", "CHARGES"])
-      .range(["#6b486b", "#4682b4"]);
+      .range(["#1A85FF", "#5D3A9B"]);
   
     chart.selectAll(".x-axis").remove();
     chart.selectAll(".y-axis").remove();
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(x0));
     
-    // Responsive x-axis labels
+    
     xAxis.selectAll("text")
       .attr("transform", window.innerWidth < 768 ? "rotate(-45)" : "rotate(-40)")
       .style("text-anchor", "end")
