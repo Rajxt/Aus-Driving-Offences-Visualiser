@@ -408,25 +408,26 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   function updateToggleText(isCharges) {
+   
+    const toggleText = document.querySelector('.toggle-text');
+    const header = document.querySelector('.toggle')
+    if (toggleText) {
+      toggleText.textContent = isCharges ? 'Show Fines' : 'Show Charges';
+      header.textContent = isCharges ? 'CHARGES' : 'FINES';
+    }
+    
+   
     const toggleLabel = document.querySelector('label[for="toggleCharges"]');
     if (toggleLabel) {
-      const textNodes = Array.from(toggleLabel.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
-      if (textNodes.length > 0) {
-        textNodes[0].textContent = isCharges ? 'Showing Fines' : 'Showing Charges';
-      } else {
-        const textSpan = toggleLabel.querySelector('span, .toggle-text');
-        if (textSpan) {
-          textSpan.textContent = isCharges ? 'Showing Charges' : 'Showing Fines' ;
-        } else {
-          toggleLabel.innerHTML = toggleLabel.innerHTML.replace(/Show (Fines|Charges)/, isCharges ? 'Showing Charges' : 'Showing Fines');
-        }
+      const toggleTextSpan = toggleLabel.querySelector('.toggle-text');
+      if (toggleTextSpan) {
+        toggleTextSpan.textContent = isCharges ? 'Show Fines' : 'Show Charges';
       }
     }
     
-    const toggleText = document.querySelector('.toggle-text, .toggle-label-text');
-    if (toggleText) {
-      toggleText.textContent = isCharges ? 'Show Fines' : 'Show Charges';
-    }
+    
+    const currentDataType = isCharges ? 'CHARGES' : 'FINES';
+    kpiLabel.text(`TOTAL ${currentDataType}`);
   }
 
   function updateKpiCard(keys) {
