@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                echo 'Cloning Vue.js app from GitHub...'
+                echo 'Cloning app from GitHub...'
                 checkout scm
             }
         }
@@ -13,7 +13,7 @@ pipeline {
             steps {
                 echo 'Building Docker image for Vue.js app...'
                 script {
-                    sh 'docker build -t vue-vite-app:latest .'
+                    sh 'docker build -t aus-vis-app:latest .'
                 }
             }
         }
@@ -22,18 +22,18 @@ pipeline {
             steps {
                 echo 'Stopping old container...'
                 script {
-                    sh 'docker stop vue-app || true'
-                    sh 'docker rm vue-app || true'
+                    sh 'docker stop aus-vis-app || true'
+                    sh 'docker rm aus-vis-app || true'
                 }
             }
         }
         
         stage('Run New Container') {
             steps {
-                echo 'Running new Vue.js container...'
+                echo 'Running new container...'
                 script {
                     // Run on port 80 (or 8080 if you prefer)
-                    sh 'docker run -d --name vue-app -p 80:80 vue-vite-app:latest'
+                    sh 'docker run -d --name aus-vis-app -p 80:80 aus-vis-app:latest'
                 }
             }
         }
@@ -41,7 +41,7 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 echo 'Checking if container is running...'
-                sh 'docker ps | grep vue-app'
+                sh 'docker ps | grep aus-vis-app'
                 sh 'sleep 5'
                 sh 'curl -f http://localhost:80 || exit 1'
             }
@@ -50,11 +50,11 @@ pipeline {
     
     post {
         success {
-            echo '✅ Vue.js app deployed successfully!'
+            echo '✅ Vis app deployed successfully!'
         }
         failure {
             echo '❌ Deployment failed!'
-            sh 'docker logs vue-app || true'
+            sh 'docker logs aus-vis-app || true'
         }
     }
 }
